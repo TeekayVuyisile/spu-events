@@ -1,0 +1,83 @@
+<div class="comment-card <%= level > 0 ? 'reply-card' : '' %>" id="comment-<%= comment.id %>">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+            <strong><%= comment.first_name %> <%= comment.last_name %></strong>
+            <small class="text-muted ms-2">@<%= comment.identifier %></small>
+        </div>
+        <small class="text-muted"><%= new Date(comment.created_at).toLocaleString() %></small>
+    </div>
+    <p class="mb-2"><%= comment.comment %></p>
+    
+    <div class="comment-actions d-flex gap-2 align-items-center">
+        <button class="reaction-btn <%= comment.user_liked ? 'active-like' : '' %>" 
+                onclick="toggleCommentReaction(<%= comment.id %>, 'like')">
+            <i class="fas fa-thumbs-up"></i> 
+            <span class="reaction-count"><%= comment.likes || 0 %></span>
+        </button>
+        
+        <button class="reaction-btn <%= comment.user_disliked ? 'active-dislike' : '' %>" 
+                onclick="toggleCommentReaction(<%= comment.id %>, 'dislike')">
+            <i class="fas fa-thumbs-down"></i> 
+            <span class="reaction-count"><%= comment.dislikes || 0 %></span>
+        </button>
+        
+        <button class="reaction-btn" onclick="showReplyForm(<%= comment.id %>)">
+            <i class="fas fa-reply"></i> Reply
+        </button>
+        
+        <% if (comment.user_id === user.id) { %>
+            <button class="reaction-btn" onclick="editComment(<%= comment.id %>, '<%= comment.comment.replace(/'/g, "\\'") %>')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="reaction-btn text-danger" onclick="deleteComment(<%= comment.id %>)">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        <% } else { %>
+            <button class="reaction-btn text-danger" onclick="showReportModal(<%= comment.id %>)">
+                <i class="fas fa-flag"></i> Report
+            </button>
+        <% } %>
+    </div>
+
+    <!-- Reply Form (Hidden by default) -->
+    <div class="reply-form mt-3" id="replyForm-<%= comment.id %>" style="display: none;">
+        <form class="reply-form-inner" onsubmit="submitReply(event, <%= comment.id %>)">
+            <div class="mb-2">
+                <textarea class="form-control form-control-sm" name="reply" rows="2" 
+                          placeholder="Write a reply..." required></textarea>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                <button type="button" class="btn btn-secondary btn-sm" 
+                        onclick="document.getElementById('replyForm-<%= comment.id %>').style.display = 'none'">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Edit Form (Hidden by default) -->
+    <div class="edit-form mt-3" id="editForm-<%= comment.id %>" style="display: none;">
+        <form class="edit-form-inner" onsubmit="submitEdit(event, <%= comment.id %>)">
+            <div class="mb-2">
+                <textarea class="form-control form-control-sm" name="edit_comment" rows="3" required></textarea>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                <button type="button" class="btn btn-secondary btn-sm" 
+                        onclick="document.getElementById('editForm-<%= comment.id %>').style.display = 'none'">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Replies -->
+    <% if (comment.replies && comment.replies.length > 0) { %>
+        <div class="replies mt-3">
+            <% comment.replies.forEach(reply => { %>
+                <%- include('comment', {comment: reply, level: level + 1}) %>
+            <% }) %>
+        </div>
+    <% } %>
+</div>

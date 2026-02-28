@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tickets - Campus Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --dark-red: #c82333;
+            --light-red: #f8d7da;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-red) !important;
+        }
+        
+        .nav-link.active {
+            color: var(--primary-red) !important;
+            font-weight: 600;
+        }
+        
+        .tickets-header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            color: var(--white);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .ticket-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border-left: 4px solid;
+        }
+        
+        .ticket-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.15);
+        }
+        
+        .status-reserved { border-left-color: #ffc107; }
+        .status-sent { border-left-color: #0dcaf0; }
+        .status-scanned { border-left-color: #198754; }
+        
+        .stats-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-top: 4px solid var(--primary-red);
+        }
+        
+        .event-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+        
+        .qr-code-placeholder {
+            width: 120px;
+            height: 120px;
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
+        
+        .text-red {
+            color: var(--primary-red) !important;
+        }
+        
+        .badge-red {
+            background-color: var(--primary-red);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/user/dashboard">
+          <img src="/include/images/logo.png" alt="" style="width: 40px; height: 40px;" /> Sol Plaatje Events
+        </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/dashboard">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/events">
+                            <i class="fas fa-calendar me-1"></i>Events
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wallet">
+                            <i class="fas fa-wallet me-1"></i>Wallet
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/user/tickets">
+                            <i class="fas fa-ticket-alt me-1"></i>Tickets
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/notifications">
+                            <i class="fas fa-bell me-1"></i>Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tickets Header -->
+    <div class="tickets-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">
+                        <i class="fas fa-ticket-alt me-2"></i>My Tickets
+                    </h1>
+                    <p class="lead mb-0">Manage and view all your event tickets</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="bg-white text-dark rounded-3 p-3 d-inline-block shadow">
+                        <small class="text-muted">Welcome</small>
+                        <div class="fw-bold text-red"><%= user.firstName %> <%= user.lastName %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <% if (success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i><%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+        
+        <% if (error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Reserved</h6>
+                            <div class="display-6 fw-bold text-warning"><%= stats.reserved %></div>
+                        </div>
+                        <div class="display-6 text-warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Received</h6>
+                            <div class="display-6 fw-bold text-info"><%= stats.sent %></div>
+                        </div>
+                        <div class="display-6 text-info">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Scanned</h6>
+                            <div class="display-6 fw-bold text-success"><%= stats.scanned %></div>
+                        </div>
+                        <div class="display-6 text-success">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total</h6>
+                            <div class="display-6 fw-bold text-red"><%= stats.total %></div>
+                        </div>
+                        <div class="display-6 text-red">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label for="status" class="form-label">Filter by Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="all" <%= statusFilter === 'all' ? 'selected' : '' %>>All Tickets</option>
+                            <option value="reserved" <%= statusFilter === 'reserved' ? 'selected' : '' %>>Reserved</option>
+                            <option value="sent" <%= statusFilter === 'sent' ? 'selected' : '' %>>Received</option>
+                            <option value="scanned" <%= statusFilter === 'scanned' ? 'selected' : '' %>>Scanned</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-filter me-1"></i>Apply Filter
+                        </button>
+                        <a href="/user/tickets" class="btn btn-outline-secondary">
+                            <i class="fas fa-refresh me-1"></i>Reset
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tickets List -->
+        <div class="row">
+            <% if (tickets.length > 0) { %>
+                <% tickets.forEach(ticket => { %>
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="ticket-card status-<%= ticket.status %> h-100">
+                            <div class="card-body">
+                                <!-- Event Image -->
+                                <% if (ticket.cover_image) { %>
+                                    <img src="<%= ticket.cover_image %>" class="event-image mb-3" alt="<%= ticket.event_title %>" 
+                                         onerror="this.src='/include/images/logo.png'">
+                                <% } else { %>
+                                    <div class="event-image mb-3 bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-calendar-alt fa-2x text-muted"></i>
+                                    </div>
+                                <% } %>
+                                
+                                <!-- Event Info -->
+                                <h5 class="card-title"><%= ticket.event_title %></h5>
+                                
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        <%= new Date(ticket.start_date_time).toLocaleDateString() %>
+                                    </small>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        <%= new Date(ticket.start_date_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                                    </small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        <%= ticket.venue || 'Venue TBA' %>
+                                    </small>
+                                </div>
+                                
+                                <!-- Ticket Status -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge 
+                                        <%= ticket.status === 'reserved' ? 'bg-warning' : 
+                                           ticket.status === 'sent' ? 'bg-info' : 'bg-success' %>">
+                                        <%= ticket.status === 'reserved' ? 'Reserved' : 
+                                            ticket.status === 'sent' ? 'Received' : 'Scanned' %>
+                                    </span>
+                                    
+                                    <% if (ticket.entrance_fee > 0) { %>
+                                        <span class="fw-bold text-success">
+                                            R<%= parseFloat(ticket.entrance_fee).toFixed(2) %>
+                                        </span>
+                                    <% } else { %>
+                                        <span class="fw-bold text-success">Free</span>
+                                    <% } %>
+                                </div>
+                                
+                                <!-- QR Code Preview/Status -->
+                                <div class="text-center mb-3">
+                                    <% if (ticket.status === 'sent' && ticket.qr_code_url) { %>
+                                        <img src="<%= ticket.qr_code_url %>" class="img-fluid" style="max-height: 80px;" alt="QR Code">
+                                        <small class="text-muted d-block mt-1">QR Code Received</small>
+                                    <% } else if (ticket.status === 'sent') { %>
+                                        <div class="qr-code-placeholder mx-auto">
+                                            <i class="fas fa-qrcode fa-2x"></i>
+                                        </div>
+                                        <small class="text-muted d-block mt-1">Digital Ticket Received</small>
+                                    <% } else { %>
+                                        <div class="qr-code-placeholder mx-auto">
+                                            <i class="fas fa-clock fa-2x"></i>
+                                        </div>
+                                        <small class="text-muted d-block mt-1">
+                                            <%= ticket.status === 'reserved' ? 
+                                                'Ticket being processed' : 
+                                                'Ticket used' %>
+                                        </small>
+                                    <% } %>
+                                </div>
+                                
+                                <!-- Action Button -->
+                                <div class="d-grid">
+                                    <a href="/user/ticket/<%= ticket.id %>" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>
+                                        <% if (ticket.status === 'sent') { %>
+                                            View Ticket
+                                        <% } else { %>
+                                            View Details
+                                        <% } %>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <h4 class="text-muted">No Tickets Found</h4>
+                        <p class="text-muted mb-4">
+                            <% if (statusFilter !== 'all') { %>
+                                No tickets found with the selected status. Try adjusting your filters.
+                            <% } else { %>
+                                You haven't purchased any tickets yet. Explore events to get started!
+                            <% } %>
+                        </p>
+                        <a href="/user/events" class="btn btn-primary">
+                            <i class="fas fa-calendar me-2"></i>Browse Events
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Campus Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --dark-red: #c82333;
+            --light-red: #f8d7da;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --volunteer-green: #198754;
+            --volunteer-light-green: #d1e7dd;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-red) !important;
+        }
+        
+        .nav-link.active {
+            color: var(--primary-red) !important;
+            font-weight: 600;
+        }
+        
+        .notifications-header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            color: var(--white);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .notification-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border-left: 4px solid;
+        }
+        
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        
+        .notification-card.unread {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+        }
+        
+        .notification-card.read {
+            opacity: 0.9;
+        }
+        
+        .notification-card.report {
+            border-left-color: var(--primary-red);
+        }
+        
+        .notification-card.volunteer {
+            border-left-color: var(--volunteer-green);
+        }
+        
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.4em 0.8em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--primary-red);
+            color: var(--primary-red);
+            border-radius: 8px;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .text-red {
+            color: var(--primary-red) !important;
+        }
+        
+        .text-green {
+            color: var(--volunteer-green) !important;
+        }
+        
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .unread-dot.report {
+            background: var(--primary-red);
+        }
+        
+        .unread-dot.volunteer {
+            background: var(--volunteer-green);
+        }
+        
+        .volunteer-alert {
+            background: linear-gradient(135deg, var(--volunteer-light-green) 0%, #fff 100%);
+            border-left: 4px solid var(--volunteer-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/user/dashboard">
+                <img src="/include/images/logo.png" alt="" style="width: 40px; height: 40px;" /> Sol Plaatje Events
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/dashboard">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/events">
+                            <i class="fas fa-calendar me-1"></i>Events
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wallet">
+                            <i class="fas fa-wallet me-1"></i>Wallet
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/tickets">
+                            <i class="fas fa-ticket-alt me-1"></i>Tickets
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/user/notifications">
+                            <i class="fas fa-bell me-1"></i>Notifications
+                            
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notifications Header -->
+    <div class="notifications-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">
+                        <i class="fas fa-bell me-2"></i>Notifications
+                    </h1>
+                    <p class="lead mb-0">Stay updated with admin responses and volunteer application status</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="bg-white text-dark rounded-3 p-3 d-inline-block shadow">
+                        <small class="text-muted">Unread Notifications</small>
+                        <div class="fw-bold text-red"><%= unreadCount %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <% if (success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i><%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+        
+        <% if (error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <!-- Actions Bar -->
+        <% if (notifications.length > 0) { %>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">
+                    <% if (unreadCount > 0) { %>
+                        <span class="text-red"><%= unreadCount %> unread</span> of <%= notifications.length %> notifications
+                    <% } else { %>
+                        All <%= notifications.length %> notifications read
+                    <% } %>
+                </h5>
+                <% if (unreadCount > 0) { %>
+                    <button class="btn btn-outline-primary btn-sm" id="markAllReadBtn">
+                        <i class="fas fa-check-double me-2"></i>Mark All as Read
+                    </button>
+                <% } %>
+            </div>
+        <% } %>
+
+        <!-- Notifications List -->
+        <div class="row">
+            <div class="col-12">
+                <% if (notifications.length > 0) { %>
+                    <% notifications.forEach(notification => { %>
+                        <div class="notification-card <%= notification.is_read ? 'read' : 'unread' %> <%= notification.notification_type %>" 
+                             id="notification-<%= notification.id %>"
+                             data-type="<%= notification.notification_type %>">
+                            <div class="card-body">
+                                <div class="row align-items-start">
+                                    <div class="col-md-1 text-center">
+                                        <% if (notification.is_read) { %>
+                                            <i class="fas fa-check-circle text-muted fa-2x"></i>
+                                        <% } else { %>
+                                            <i class="fas fa-bell <%= notification.notification_type === 'report' ? 'text-red' : 'text-green' %> fa-2x"></i>
+                                        <% } %>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <!-- Notification Header -->
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="mb-1">
+                                                <% if (!notification.is_read) { %>
+                                                    <span class="unread-dot <%= notification.notification_type %>"></span>
+                                                <% } %>
+                                                <% if (notification.notification_type === 'report') { %>
+                                                    Report Response
+                                                <% } else { %>
+                                                    Volunteer Application Update
+                                                <% } %>
+                                            </h5>
+                                            <div class="d-flex gap-2">
+                                                <% if (notification.notification_type === 'report') { %>
+                                                    <span class="badge 
+                                                        <%= notification.status === 'resolved' ? 'bg-success' : 'bg-secondary' %> 
+                                                        status-badge">
+                                                        <%= notification.status === 'resolved' ? 'Resolved' : 'Dismissed' %>
+                                                    </span>
+                                                    <span class="badge bg-info status-badge">
+                                                        <%= notification.content_type === 'photo' ? 'Photo Report' : 'Comment Report' %>
+                                                    </span>
+                                                <% } else { %>
+                                                    <span class="badge 
+                                                        <%= notification.status === 'accepted' ? 'bg-success' : 'bg-danger' %> 
+                                                        status-badge">
+                                                        <%= notification.status === 'accepted' ? 'Accepted' : 'Rejected' %>
+                                                    </span>
+                                                    <span class="badge bg-primary status-badge">
+                                                        Volunteer
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+
+                        <!-- Content based on notification type -->
+                        <% if (notification.notification_type === 'report') { %>
+                            <!-- Report Content -->
+                            <div class="mb-3">
+                                <p class="text-muted mb-1">
+                                    <strong>Reported User:</strong> 
+                                    <%= notification.reported_first_name %> <%= notification.reported_last_name %>
+                                </p>
+                                <% if (notification.event_title) { %>
+                                    <p class="text-muted mb-1">
+                                        <strong>Event:</strong> <%= notification.event_title %>
+                                    </p>
+                                <% } %>
+                            </div>
+
+                            <!-- Admin Response -->
+                            <div class="alert 
+                                <%= notification.status === 'resolved' ? 'alert-success' : 'alert-secondary' %> 
+                                py-2">
+                                <div class="d-flex">
+                                    <i class="fas 
+                                        <%= notification.status === 'resolved' ? 'fa-check-circle' : 'fa-info-circle' %> 
+                                        me-2 mt-1"></i>
+                                    <div>
+                                        <strong>Admin Response:</strong>
+                                        <p class="mb-0 mt-1"><%= notification.admin_response %></p>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <!-- Volunteer Application Content -->
+                            <div class="mb-3">
+                                <p class="text-muted mb-1">
+                                    <strong>Event:</strong> <strong class="text-dark"><%= notification.event_title %></strong>
+                                </p>
+                                <p class="text-muted mb-1">
+                                    <strong>Role Applied:</strong> <%= notification.role %>
+                                </p>
+                                <% if (notification.description) { %>
+                                    <p class="text-muted mb-1">
+                                        <strong>Your Application:</strong> <%= notification.description %>
+                                    </p>
+                                <% } %>
+                                <p class="text-muted mb-1">
+                                    <strong>Event Date:</strong> <%= new Date(notification.start_date_time).toLocaleDateString() %>
+                                </p>
+                                <p class="text-muted mb-1">
+                                    <strong>Venue:</strong> <%= notification.venue %>
+                                </p>
+                            </div>
+
+                            <!-- Volunteer Status Alert -->
+                            <div class="alert 
+                                <%= notification.status === 'accepted' ? 'volunteer-alert' : 'alert-success' %> 
+                                py-2">
+                                <div class="d-flex">
+                                    <i class="fas 
+                                        <%= notification.status === 'accepted' ? 'fa-user-check text-green' : 'fa-user-times text-danger' %> 
+                                        me-2 mt-1"></i>
+                                    <div>
+                                        <strong>
+                                            <% if (notification.status === 'accepted') { %>
+                                                Congratulations! Your volunteer application has been accepted!
+                                            <% } else { %>
+                                                Volunteer Application Update
+                                            <% } %>
+                                        </strong>
+                                        <p class="mb-0 mt-1"><%= notification.admin_response %></p>
+                                        <% if (notification.status === 'accepted') { %>
+                                            <p class="mb-0 mt-2">
+                                                <small>
+                                                    <i class="fas fa-info-circle me-1"></i>
+                                                    Please arrive 30 minutes before the event starts for briefing.
+                                                </small>
+                                            </p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+
+                        <!-- Notification Details -->
+                        <div class="row text-muted small">
+                            <div class="col-md-6">
+                                <i class="fas fa-clock me-1"></i>
+                                <%= new Date(notification.created_at).toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) %>
+                            </div>
+                            <% if (notification.notification_type === 'volunteer' && notification.responded_by) { %>
+                                <div class="col-md-6">
+                                    <i class="fas fa-user-check me-1"></i>
+                                    Responded by: <%= notification.admin_first_name %> <%= notification.admin_last_name %>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <% if (!notification.is_read) { %>
+                            <button class="btn btn-outline-primary btn-sm mark-read-btn" 
+                                    data-notification-id="<%= notification.id %>"
+                                    data-notification-type="<%= notification.notification_type %>">
+                                <i class="fas fa-check me-1"></i>Mark Read
+                            </button>
+                        <% } else { %>
+                            <span class="badge bg-secondary">Read</span>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-bell-slash"></i>
+                        </div>
+                        <h4 class="text-muted">No Notifications</h4>
+                        <p class="text-muted mb-4">
+                            You don't have any notifications yet. When admins respond to your reports or volunteer applications, 
+                            you'll see their responses here.
+                        </p>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="/user/events" class="btn btn-primary">
+                                <i class="fas fa-calendar me-2"></i>Browse Events
+                            </a>
+                            <a href="/user/tickets" class="btn btn-outline-secondary">
+                                <i class="fas fa-ticket-alt me-2"></i>View Tickets
+                            </a>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <% if (notifications.length > 0) { %>
+            <div class="card bg-light border-0 mt-4">
+                <div class="card-body text-center">
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Notifications show admin responses to your reports and updates on your volunteer applications. 
+                        Mark them as read to keep track of what you've seen.
+                    </p>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mark single notification as read
+        document.querySelectorAll('.mark-read-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const notificationId = this.getAttribute('data-notification-id');
+                const notificationType = this.getAttribute('data-notification-type');
+                const notificationCard = document.getElementById(`notification-${notificationId}`);
+                
+                try {
+                    const response = await fetch(`/user/notification/${notificationId}/read`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ type: notificationType })
+                    });
+                    
+                    if (response.ok) {
+                        // Update UI
+                        notificationCard.classList.remove('unread');
+                        notificationCard.classList.add('read');
+                        
+                        // Remove the mark as read button
+                        this.outerHTML = '<span class="badge bg-secondary">Read</span>';
+                        
+                        // Update unread count in navbar
+                        updateUnreadCount(-1);
+                        
+                        // Show success feedback
+                        showToast('Notification marked as read', 'success');
+                    } else {
+                        throw new Error('Failed to mark notification as read');
+                    }
+                } catch (error) {
+                    console.error('Error marking notification as read:', error);
+                    showToast('Error marking notification as read', 'error');
+                }
+            });
+        });
+
+        // Mark all notifications as read
+        document.getElementById('markAllReadBtn')?.addEventListener('click', async function() {
+            try {
+                const response = await fetch('/user/notifications/read-all', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    // Update all notifications in UI
+                    document.querySelectorAll('.notification-card.unread').forEach(card => {
+                        card.classList.remove('unread');
+                        card.classList.add('read');
+                        
+                        const buttonContainer = card.querySelector('.col-md-2.text-end');
+                        if (buttonContainer) {
+                            buttonContainer.innerHTML = '<span class="badge bg-secondary">Read</span>';
+                        }
+                    });
+                    
+                    // Update unread count in navbar
+                    const unreadCount = document.querySelectorAll('.notification-card.unread').length;
+                    updateUnreadCount(-unreadCount);
+                    
+                    // Hide the mark all button
+                    this.style.display = 'none';
+                    
+                    // Update the header text
+                    const headerText = document.querySelector('.d-flex.justify-content-between h5');
+                    if (headerText) {
+                        headerText.innerHTML = `All ${document.querySelectorAll('.notification-card').length} notifications read`;
+                    }
+                    
+                    showToast('All notifications marked as read', 'success');
+                } else {
+                    throw new Error('Failed to mark all notifications as read');
+                }
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+                showToast('Error marking notifications as read', 'error');
+            }
+        });
+
+        // Update unread count in navbar
+        function updateUnreadCount(change) {
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                let currentCount = parseInt(badge.textContent);
+                const newCount = currentCount + change;
+                
+                if (newCount <= 0) {
+                    badge.remove();
+                    // Also update the mark all button visibility
+                    const markAllBtn = document.getElementById('markAllReadBtn');
+                    if (markAllBtn) {
+                        markAllBtn.style.display = 'none';
+                    }
+                } else {
+                    badge.textContent = newCount;
+                }
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            const existingToasts = document.querySelector('.toast-container');
+            if (existingToasts) {
+                existingToasts.remove();
+            }
+
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            
+            const toastEl = document.createElement('div');
+            toastEl.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+            toastEl.setAttribute('role', 'alert');
+            toastEl.setAttribute('aria-live', 'assertive');
+            toastEl.setAttribute('aria-atomic', 'true');
+            
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toastEl);
+            document.body.appendChild(toastContainer);
+            
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    </script>
+</body>
+</html>

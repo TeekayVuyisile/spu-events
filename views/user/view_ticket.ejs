@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Details - Campus Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --dark-red: #c82333;
+            --light-red: #f8d7da;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-red) !important;
+        }
+        
+        .nav-link.active {
+            color: var(--primary-red) !important;
+            font-weight: 600;
+        }
+        
+        .ticket-header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            color: var(--white);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .ticket-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .ticket-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 2px solid #0d6efd;
+        }
+        
+        .ticket-status {
+            border-left: 4px solid;
+        }
+        
+        .status-reserved { border-left-color: #ffc107; }
+        .status-sent { border-left-color: #0dcaf0; }
+        .status-scanned { border-left-color: #198754; }
+        
+        .qr-container {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+        
+        .event-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .ticket-info-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .ticket-info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .pending-message {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-left: 4px solid #ffc107;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        
+        .text-red {
+            color: var(--primary-red) !important;
+        }
+
+        .ticket-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .ticket-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .ticket-printable, .ticket-printable * {
+                visibility: visible;
+            }
+            .ticket-printable {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 100%;
+                box-shadow: none;
+                border: 2px solid #333;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .ticket-card {
+                box-shadow: none !important;
+                border: 2px solid #333 !important;
+            }
+            .btn, .alert, .card:last-child {
+                display: none !important;
+            }
+            .qr-container {
+                border: 2px solid #333 !important;
+            }
+            .ticket-info {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm no-print">
+        <div class="container">
+            <a class="navbar-brand" href="/user/dashboard">
+          <img src="/include/images/logo.png" alt="" style="width: 40px; height: 40px;" /> Sol Plaatje Events
+        </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/dashboard">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/events">
+                            <i class="fas fa-calendar me-1"></i>Events
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wallet">
+                            <i class="fas fa-wallet me-1"></i>Wallet
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/user/tickets">
+                            <i class="fas fa-ticket-alt me-1"></i>Tickets
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/notifications">
+                            <i class="fas fa-bell me-1"></i>Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Ticket Header -->
+    <div class="ticket-header no-print">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/user/dashboard" class="text-white">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/user/tickets" class="text-white">My Tickets</a></li>
+                            <li class="breadcrumb-item active text-white" aria-current="page">Ticket Details</li>
+                        </ol>
+                    </nav>
+                    <h1 class="display-6 fw-bold">Ticket Details</h1>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="bg-white text-dark rounded-3 p-3 d-inline-block shadow">
+                        <small class="text-muted">Welcome</small>
+                        <div class="fw-bold text-red"><%= user.firstName %> <%= user.lastName %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <% if (success) { %>
+            <div class="alert alert-success alert-dismissible fade show mb-4 no-print" role="alert">
+                <i class="fas fa-check-circle me-2"></i><%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+        
+        <% if (error) { %>
+            <div class="alert alert-danger alert-dismissible fade show mb-4 no-print" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <div class="ticket-container">
+            <div class="ticket-card status-<%= ticket.status %> ticket-printable">
+                <!-- Event Image -->
+                <% if (ticket.cover_image) { %>
+                    <img src="<%= ticket.cover_image %>" class="event-image" alt="<%= ticket.event_title %>"
+                         onerror="this.src='/include/images/logo.png'">
+                <% } else { %>
+                    <div class="event-image bg-light d-flex align-items-center justify-content-center">
+                        <i class="fas fa-calendar-alt fa-3x text-muted"></i>
+                    </div>
+                <% } %>
+                
+                <div class="card-body p-4">
+                    <!-- Event Title -->
+                    <h2 class="card-title text-center mb-4"><%= ticket.event_title %></h2>
+                    
+                    <!-- Ticket Status Alert -->
+                    <div class="alert 
+                        <%= ticket.status === 'reserved' ? 'alert-warning' : 
+                           ticket.status === 'sent' ? 'alert-info' : 'alert-success' %> 
+                        text-center">
+                        <i class="fas 
+                            <%= ticket.status === 'reserved' ? 'fa-clock' : 
+                               ticket.status === 'sent' ? 'fa-check-circle' : 'fa-qrcode' %> 
+                            me-2"></i>
+                        <strong>
+                            <% if (ticket.status === 'reserved') { %>
+                                Ticket Reserved - Pending Confirmation
+                            <% } else if (ticket.status === 'sent') { %>
+                                Ticket Received - Ready for Event
+                            <% } else { %>
+                                Ticket Used - Successfully Scanned
+                            <% } %>
+                        </strong>
+                    </div>
+
+                    <!-- Main Content Row -->
+                    <div class="row">
+                        <!-- Left Column: QR Code -->
+                        <div class="col-md-6">
+                            <div class="qr-container">
+                                <% if (ticket.status === 'sent' && ticket.qr_code_data) { %>
+                                    <div id="qrcode">
+                                        <!-- QR code will be rendered here -->
+                                    </div>
+                                    <div class="mt-3 text-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-qrcode me-1"></i>
+                                            Unique QR Code for Entry
+                                        </small>
+                                    </div>
+                                <% } else if (ticket.status === 'sent') { %>
+                                    <div class="text-center">
+                                        <i class="fas fa-ticket-alt fa-4x text-primary mb-3"></i>
+                                        <h5 class="text-info">Digital Ticket Received</h5>
+                                        <p class="text-muted">Your ticket has been received and is ready for use</p>
+                                    </div>
+                                <% } else if (ticket.status === 'reserved') { %>
+                                    <div class="pending-message">
+                                        <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                                        <h5 class="text-warning">Ticket Being Processed</h5>
+                                        <p class="mb-2">Your ticket reservation has been received and is being processed by our team.</p>
+                                        <p class="mb-0"><strong>Your digital ticket will be sent to you soon!</strong></p>
+                                    </div>
+                                <% } else { %>
+                                    <div class="mb-3">
+                                        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                                        <h5 class="text-success">Ticket Used</h5>
+                                        <p class="text-muted">This ticket has been successfully scanned and used for entry</p>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <!-- Ticket Status -->
+                            <div class="text-center mt-4">
+                                <h5>Ticket Status</h5>
+                                <% 
+                                    let statusBadgeClass = 'bg-warning';
+                                    let statusText = 'Reserved';
+                                    if (ticket.status === 'sent') {
+                                        statusBadgeClass = 'bg-info';
+                                        statusText = 'Received';
+                                    } else if (ticket.status === 'scanned') {
+                                        statusBadgeClass = 'bg-success';
+                                        statusText = 'Scanned';
+                                    }
+                                %>
+                                <span class="badge <%= statusBadgeClass %> fs-6 p-2">
+                                    <i class="fas <%= ticket.status === 'scanned' ? 'fa-check-circle' : ticket.status === 'sent' ? 'fa-check' : 'fa-clock' %> me-1"></i>
+                                    <%= statusText %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Ticket Information -->
+                        <div class="col-md-6">
+                            <!-- User Information -->
+                            <div class="mb-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-user-circle me-2"></i>Attendee Information
+                                </h5>
+                                <div class="ticket-details-grid">
+                                    <div>
+                                        <strong>First Name:</strong><br>
+                                        <%= user.firstName %>
+                                    </div>
+                                    <div>
+                                        <strong>Last Name:</strong><br>
+                                        <%= user.lastName %>
+                                    </div>
+                                    <div>
+                                        <strong>Student Number:</strong><br>
+                                        <%= user.identifier %>
+                                    </div>
+                                    <div>
+                                        <strong>User Type:</strong><br>
+                                        <span class="badge bg-info"><%= user.userType %></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Event Information -->
+                            <div class="mb-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-calendar-alt me-2"></i>Event Information
+                                </h5>
+                                <div class="ticket-details-grid">
+                                    <div>
+                                        <strong>Event:</strong><br>
+                                        <%= ticket.event_title %>
+                                    </div>
+                                    <div>
+                                        <strong>Date:</strong><br>
+                                        <%= new Date(ticket.start_date_time).toLocaleDateString() %>
+                                    </div>
+                                    <div>
+                                        <strong>Time:</strong><br>
+                                        <%= new Date(ticket.start_date_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %> - 
+                                        <%= new Date(ticket.end_date_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                                    </div>
+                                    <div>
+                                        <strong>Venue:</strong><br>
+                                        <%= ticket.venue || 'TBA' %>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ticket Details -->
+                            <div class="mb-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-receipt me-2"></i>Ticket Details
+                                </h5>
+                                <div class="ticket-details-grid">
+                                    <div>
+                                        <strong>Ticket ID:</strong><br>
+                                        #<%= ticket.id.toString().padStart(6, '0') %>
+                                    </div>
+                                    <div>
+                                        <strong>Price Paid:</strong><br>
+                                        <% if (ticket.price_paid > 0) { %>
+                                            R<%= parseFloat(ticket.price_paid).toFixed(2) %>
+                                        <% } else { %>
+                                            Free
+                                        <% } %>
+                                    </div>
+                                    <div>
+                                        <strong>Created:</strong><br>
+                                        <%= new Date(ticket.created_at).toLocaleDateString() %>
+                                    </div>
+                                    <div>
+                                        <strong>Last Updated:</strong><br>
+                                        <%= new Date(ticket.updated_at).toLocaleDateString() %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row mt-4 no-print">
+                        <div class="col-md-4 mb-2">
+                            <a href="/user/event/<%= ticket.event_id %>" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-calendar me-2"></i>View Event
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="/user/tickets" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-ticket-alt me-2"></i>All Tickets
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <% if (ticket.status === 'sent') { %>
+                                <button onclick="window.print()" class="btn btn-primary w-100">
+                                    <i class="fas fa-print me-2"></i>Print Ticket
+                                </button>
+                            <% } else { %>
+                                <button class="btn btn-outline-dark w-100" disabled>
+                                    <i class="fas fa-print me-2"></i>Print Unavailable
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="card mt-4 no-print">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle text-primary me-2"></i>Important Information
+                    </h5>
+                    <ul class="list-unstyled mb-0">
+                        <% if (ticket.status === 'reserved') { %>
+                            <li class="mb-2">
+                                <i class="fas fa-clock text-warning me-2"></i>
+                                Your ticket is being processed by the event organizers
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-envelope text-info me-2"></i>
+                                You will receive your digital ticket once it's generated
+                            </li>
+                        <% } else if (ticket.status === 'sent') { %>
+                            <li class="mb-2">
+                                <i class="fas fa-qrcode text-success me-2"></i>
+                                Show the QR code at the event entrance for scanning
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-mobile-alt text-info me-2"></i>
+                                You can also show this digital ticket on your phone
+                            </li>
+                        <% } else { %>
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                This ticket has been successfully used for event entry
+                            </li>
+                        <% } %>
+                        <li class="mb-0">
+                            <i class="fas fa-user text-dark me-2"></i>
+                            This ticket is non-transferable and valid only for <%= user.firstName %> <%= user.lastName %>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    
+    <script>
+        // Render QR Code if data exists
+        function renderQRCode() {
+            <% if (ticket && ticket.qr_code_data) { %>
+                const qrData = '<%= ticket.qr_code_data %>';
+                const qrContainer = document.getElementById('qrcode');
+                
+                if (qrData && qrContainer) {
+                    try {
+                        const qr = qrcode(0, 'M');
+                        qr.addData(qrData);
+                        qr.make();
+                        
+                        const qrSvg = qr.createSvgTag({
+                            scalable: true,
+                            margin: 0,
+                            size: 200
+                        });
+                        
+                        qrContainer.innerHTML = qrSvg;
+                        
+                        // Style the SVG
+                        const svgElement = qrContainer.querySelector('svg');
+                        if (svgElement) {
+                            svgElement.style.width = '200px';
+                            svgElement.style.height = '200px';
+                            svgElement.style.display = 'block';
+                            svgElement.style.margin = '0 auto';
+                        }
+                        
+                        console.log('QR code rendered successfully');
+                    } catch (error) {
+                        console.error('Error rendering QR code:', error);
+                        qrContainer.innerHTML = '<div class="text-danger">Error displaying QR code</div>';
+                    }
+                }
+            <% } %>
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderQRCode();
+        });
+    </script>
+</body>
+</html>

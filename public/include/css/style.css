@@ -1,0 +1,205 @@
+.lg.logo-img {
+  width: 20%;
+}
+.lg.form-control {
+  background-color: rgb(0, 0, 0, 0.5);
+  border: 3px solid rgb(246, 57, 5);
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+}
+.form-control.lg:focus {
+  box-shadow: 0 0 0 0.2rem rgb(246, 57, 5);
+  border-color: rgb(246, 57, 5);
+}
+
+.lg.card {
+  border-radius: 20px;
+  background-color: rgba(0, 0, 0, 0.03);
+  box-shadow: 10px 10px 10px;
+}
+.lg.btn-outline-success {
+  border-radius: 20px;
+}
+.lg.form-label {
+  font-weight: bold;
+}
+
+/*Navbar*/
+h1 {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 500;
+}
+
+#header {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+}
+.nav-link {
+  font-size: 130%;
+  font-family: "Times New Roman", Times, serif;
+  background-color: lightgray;
+  font-weight: bold;
+
+  margin-right: 15px;
+  border-radius: 20px;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: color 0.5s ease-in-out, background-color 0.5s ease-in-out,
+    box-shadow 0.5s ease-in-out;
+}
+.nav-link.active {
+  background-color: rgb(239, 97, 97);
+  color: aliceblue !important;
+  box-shadow: black 2px 2px 2px;
+}
+.nav-link:hover {
+  background-color: rgb(239, 97, 97);
+  color: aliceblue !important;
+  box-shadow: black 2px 2px 2px;
+}
+.nav-profile {
+  font-size: 130%;
+  font-family: "Times New Roman", Times, serif;
+  background-color: lightgray;
+  font-weight: bold;
+
+  border-radius: 20px;
+  padding: 8px !important;
+  margin-left: 200px !important;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+}
+.nav-profile:hover {
+  background-color: rgb(239, 97, 97);
+  box-shadow: black 2px 2px 2px;
+}
+.nav-profile > a {
+  transition: color 0.5s ease-in-out;
+}
+.nav-profile > a:hover {
+  color: aliceblue !important;
+}
+
+#navbarNav > div > ul > li:nth-child(1) > a:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+.logout:hover {
+  background-color: rgb(208, 45, 45);
+  color: white;
+}
+
+.event.btn {
+  width: 50%;
+}
+.like-wrapper {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.like-wrapper:hover {
+  background-color: #facaca;
+}
+
+.heart-icon {
+  font-size: 18px;
+  color: black;
+  transition: color 0.3s;
+}
+
+.like-wrapper:hover .heart-icon {
+  color: red;
+}
+
+.like-wrapper.liked .heart-icon {
+  color: red;
+}
+
+.event-card {
+  width: 380px;
+  border-radius: 20px;
+  background-color: #fefefe;
+  transition: box-shadow 0.5s ease;
+}
+.event-card:hover {
+  box-shadow: rgb(93, 83, 83) 5px 5px 5px;
+}
+.card-img-top {
+  width: 55%;
+  height: 220px;
+  border-radius: 50%;
+}
+.liked {
+  color: red;
+}
+/*Notification Panel*/
+.messages-container {
+  display: flex;
+  height: 100%;
+}
+.messages-list {
+  width: 30%;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.message-content {
+  flex: 1;
+  overflow-y: auto;
+}
+.message-preview {
+  font-size: 0.9rem;
+  color: #666;
+}
+.message-time {
+  font-size: 0.8rem;
+  color: #999;
+}
+a.message-link {
+  text-decoration: none;
+  color: inherit;
+}
+a.message-link:hover {
+  background-color: #ff8585 !important;
+  color: white !important;
+}
+.unread {
+  background-color: #ffbdbd;
+  font-weight: bold;
+}
+.active-message {
+  background-color: #bababa8e !important;
+
+  font-weight: bold;
+}
+.messages-header {
+  flex-shrink: 0;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  background-color: #fff;
+}
+.messages-body {
+  flex: 1;
+  overflow-y: auto;
+}
+/* Right panel message styling */
+.message-header {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+.message-body {
+  font-size: 1rem;
+  line-height: 1.6;
+}

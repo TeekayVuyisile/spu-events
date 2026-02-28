@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Reports - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --dark-red: #c82333;
+            --light-red: #f8d7da;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .reports-header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            color: var(--white);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .report-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            border-top: 4px solid;
+            overflow: hidden;
+        }
+        
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.15);
+        }
+        
+        .status-pending { border-top-color: #ffc107; }
+        .status-investigating { border-top-color: #0dcaf0; }
+        .status-resolved { border-top-color: #198754; }
+        .status-dismissed { border-top-color: #6c757d; }
+        
+        .stats-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-top: 4px solid var(--primary-red);
+        }
+        
+        .content-preview {
+            background: var(--light-gray);
+            border-left: 3px solid var(--primary-red);
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .photo-preview {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .category-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .filter-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/admin_header') %>
+
+    <!-- Reports Header -->
+    <div class="reports-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">
+                        <i class="fas fa-flag me-2"></i>Manage Reports
+                    </h1>
+                    <p class="lead mb-0">Review and manage user reports</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="bg-white text-dark rounded-3 p-3 d-inline-block shadow">
+                        <small class="text-muted">Total Reports</small>
+                        <div class="fw-bold text-red"><%= reports.length %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Success Message -->
+        <% if (success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i><%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <!-- Error Message -->
+        <% if (error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Pending</h6>
+                            <div class="display-6 fw-bold text-warning"><%= stats.pending %></div>
+                        </div>
+                        <div class="display-6 text-warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Investigating</h6>
+                            <div class="display-6 fw-bold text-info"><%= stats.investigating %></div>
+                        </div>
+                        <div class="display-6 text-info">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Resolved</h6>
+                            <div class="display-6 fw-bold text-success"><%= stats.resolved %></div>
+                        </div>
+                        <div class="display-6 text-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Dismissed</h6>
+                            <div class="display-6 fw-bold text-secondary"><%= stats.dismissed %></div>
+                        </div>
+                        <div class="display-6 text-secondary">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="filter-card">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="all" <%= (typeof statusFilter !== 'undefined' && statusFilter === 'all') ? 'selected' : '' %>>All Status</option>
+                        <option value="pending" <%= (typeof statusFilter !== 'undefined' && statusFilter === 'pending') ? 'selected' : '' %>>Pending</option>
+                        <option value="investigating" <%= (typeof statusFilter !== 'undefined' && statusFilter === 'investigating') ? 'selected' : '' %>>Investigating</option>
+                        <option value="resolved" <%= (typeof statusFilter !== 'undefined' && statusFilter === 'resolved') ? 'selected' : '' %>>Resolved</option>
+                        <option value="dismissed" <%= (typeof statusFilter !== 'undefined' && statusFilter === 'dismissed') ? 'selected' : '' %>>Dismissed</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Report Type</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="all" <%= (typeof typeFilter !== 'undefined' && typeFilter === 'all') ? 'selected' : '' %>>All Types</option>
+                        <option value="inappropriate" <%= (typeof typeFilter !== 'undefined' && typeFilter === 'inappropriate') ? 'selected' : '' %>>Inappropriate</option>
+                        <option value="harassment" <%= (typeof typeFilter !== 'undefined' && typeFilter === 'harassment') ? 'selected' : '' %>>Harassment</option>
+                        <option value="spam" <%= (typeof typeFilter !== 'undefined' && typeFilter === 'spam') ? 'selected' : '' %>>Spam</option>
+                        <option value="hate_speech" <%= (typeof typeFilter !== 'undefined' && typeFilter === 'hate_speech') ? 'selected' : '' %>>Hate Speech</option>
+                        <option value="other" <%= (typeof typeFilter !== 'undefined' && typeFilter === 'other') ? 'selected' : '' %>>Other</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2 w-100">
+                        <i class="fas fa-filter me-1"></i>Apply Filters
+                    </button>
+                </div>
+                <div class="col-12">
+                    <a href="/admin/reports" class="btn btn-outline-secondary">
+                        <i class="fas fa-refresh me-1"></i>Reset Filters
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Reports List -->
+        <div class="row">
+            <% if (reports.length > 0) { %>
+                <% reports.forEach(report => { %>
+                    <div class="col-md-6 col-xl-4 mb-4">
+                        <div class="card report-card status-<%= report.status %> h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge 
+                                        <%= report.status === 'pending' ? 'bg-warning' : 
+                                           report.status === 'investigating' ? 'bg-info' : 
+                                           report.status === 'resolved' ? 'bg-success' : 'bg-secondary' %>">
+                                        <%= report.status.charAt(0).toUpperCase() + report.status.slice(1) %>
+                                    </span>
+                                    <span class="badge bg-dark ms-1">
+                                        <%= report.report_type.replace('_', ' ') %>
+                                    </span>
+                                    <span class="badge <%= report.photo_wall_id ? 'bg-info' : 'bg-primary' %> category-badge ms-1">
+                                        <i class="fas <%= report.photo_wall_id ? 'fa-image' : 'fa-comment' %> me-1"></i>
+                                        <%= report.photo_wall_id ? 'Photo' : 'Comment' %>
+                                    </span>
+                                </div>
+                                <small class="text-muted">
+                                    <%= new Date(report.created_at).toLocaleDateString() %>
+                                </small>
+                            </div>
+                            <div class="card-body">
+                                <!-- Content Preview -->
+                                <h6 class="card-title">
+                                    <% if (report.photo_wall_id) { %>
+                                        Reported Photo
+                                    <% } else { %>
+                                        Reported Comment
+                                    <% } %>
+                                </h6>
+                                
+                                <% if (report.photo_wall_id && report.photo_url) { %>
+                                    <!-- Photo Preview -->
+                                    <div class="text-center">
+                                        <img src="<%= report.photo_url %>" class="photo-preview" 
+                                             alt="Reported photo" onerror="this.src='/include/images/logo.png'">
+                                        <% if (report.photo_caption) { %>
+                                            <div class="content-preview">
+                                                "<%= report.photo_caption.length > 100 ? 
+                                                    report.photo_caption.substring(0, 100) + '...' : 
+                                                    report.photo_caption %>"
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                <% } else if (report.reported_comment) { %>
+                                    <!-- Comment Preview -->
+                                    <div class="content-preview">
+                                        "<%= report.reported_comment.length > 100 ? 
+                                            report.reported_comment.substring(0, 100) + '...' : 
+                                            report.reported_comment %>"
+                                    </div>
+                                <% } %>
+                                
+                                <!-- User Information -->
+                                <div class="mb-2">
+                                    <small class="text-muted">Reported User:</small><br>
+                                    <strong>
+                                        <%= report.reported_first_name %> <%= report.reported_last_name %>
+                                    </strong>
+                                    <code class="ms-1"><%= report.reported_identifier %></code>
+                                    <% if (report.reported_user_status === 'banned') { %>
+                                        <span class="badge bg-danger ms-1">Banned</span>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <small class="text-muted">Reported By:</small><br>
+                                    <strong>
+                                        <%= report.reporter_first_name %> <%= report.reporter_last_name %>
+                                    </strong>
+                                    <code class="ms-1"><%= report.reporter_identifier %></code>
+                                </div>
+                                
+                                <% if (report.event_title) { %>
+                                    <div class="mb-2">
+                                        <small class="text-muted">Event:</small><br>
+                                        <strong><%= report.event_title %></strong>
+                                    </div>
+                                <% } %>
+                                
+                                <div class="mb-2">
+                                    <small class="text-muted">Reason:</small><br>
+                                    <%= report.report_reason %>
+                                </div>
+
+                                <% if (report.admin_response) { %>
+                                    <div class="alert alert-info py-2 mt-2">
+                                        <small>
+                                            <strong>Admin Response:</strong><br>
+                                            <%= report.admin_response %>
+                                        </small>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/admin/report/<%= report.id %>" class="btn btn-primary btn-sm w-100">
+                                    <i class="fas fa-eye me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <h4 class="text-muted">No Reports Found</h4>
+                        <p class="text-muted">
+                            <% if (typeof statusFilter !== 'undefined' && statusFilter !== 'all' || typeof typeFilter !== 'undefined' && typeFilter !== 'all') { %>
+                                Try adjusting your filters to see more reports
+                            <% } else { %>
+                                There are no reports to display at this time
+                            <% } %>
+                        </p>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
