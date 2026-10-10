@@ -1,0 +1,135 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens: see design-system/MASTER.md. Light is the default theme. */
+:root {
+  --background: #fbfaff;
+  --foreground: #1a1033;
+  --card: #ffffff;
+  --card-foreground: #1a1033;
+  --popover: #ffffff;
+  --popover-foreground: #1a1033;
+  --muted: #f1eef9;
+  --muted-foreground: #5b5370;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #f1eef9;
+  --secondary-foreground: #1a1033;
+  --accent: #f1eef9;
+  --accent-foreground: #1a1033;
+  --cta: #f97316;
+  --cta-foreground: #1a0b00;
+  --border: #e4dff2;
+  --input: #e4dff2;
+  --ring: #7c3aed;
+  --success: #15803d;
+  --warning: #b45309;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --radius: 1rem;
+  color-scheme: light;
+}
+
+.dark {
+  --background: #0b0714;
+  --foreground: #f4f1fb;
+  --card: #140e22;
+  --card-foreground: #f4f1fb;
+  --popover: #140e22;
+  --popover-foreground: #f4f1fb;
+  --muted: #1e1730;
+  --muted-foreground: #a79fbf;
+  --primary: #a78bfa;
+  --primary-foreground: #1a1033;
+  --secondary: #1e1730;
+  --secondary-foreground: #f4f1fb;
+  --accent: #1e1730;
+  --accent-foreground: #f4f1fb;
+  --cta: #fb923c;
+  --cta-foreground: #1a0b00;
+  --border: #2a2240;
+  --input: #2a2240;
+  --ring: #a78bfa;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --destructive: #f87171;
+  --destructive-foreground: #1a0505;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-cta: var(--cta);
+  --color-cta-foreground: var(--cta-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --font-display: 'Outfit Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Work Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}
+
+@utility tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ticket-stub notch: half-circle cut-outs on both edges at --notch-y. */
+@utility ticket-notch {
+  --notch-r: 12px;
+  mask:
+    radial-gradient(var(--notch-r) at 0 var(--notch-y, 50%), transparent 98%, #000) left / 51% 100%
+      no-repeat,
+    radial-gradient(var(--notch-r) at 100% var(--notch-y, 50%), transparent 98%, #000) right / 51%
+      100% no-repeat;
+}
+
+@utility perforation {
+  background: repeating-linear-gradient(90deg, var(--border) 0 8px, transparent 8px 14px);
+  height: 2px;
+}

@@ -1,0 +1,85 @@
+import { CalendarDays, Inbox, Ticket, UserRound, Wallet } from 'lucide-react';
+import { NavLink } from 'react-router';
+import { AnimatedOutlet } from '@/components/motion/animated-outlet';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { cn } from '@/lib/utils';
+
+const nav = [
+  { to: '/', label: 'Discover', icon: CalendarDays },
+  { to: '/tickets', label: 'Tickets', icon: Ticket },
+  { to: '/wallet', label: 'Wallet', icon: Wallet },
+  { to: '/inbox', label: 'Inbox', icon: Inbox },
+  { to: '/me', label: 'Me', icon: UserRound },
+] as const;
+
+/** Student shell: top nav on desktop, bottom tab bar under 768px (MASTER.md §7). */
+export function AppShell() {
+  return (
+    <div className="min-h-dvh pb-20 md:pb-0">
+      <a
+        href="#main"
+        className="sr-only z-50 rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        Skip to content
+      </a>
+
+      <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+          <NavLink to="/" className="flex items-center gap-2.5 font-display text-xl font-extrabold">
+            <span aria-hidden className="size-7 rounded-lg bg-gradient-to-br from-primary to-cta" />
+            Monthati
+          </NavLink>
+
+          <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+            {nav.map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/'}
+                className={({ isActive }) =>
+                  cn(
+                    'rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted',
+                    isActive ? 'text-primary' : 'text-muted-foreground',
+                  )
+                }
+              >
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <main id="main" className="mx-auto max-w-7xl px-4 py-8 md:py-12">
+        <AnimatedOutlet />
+      </main>
+
+      <nav
+        aria-label="Main"
+        className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/90 backdrop-blur-md md:hidden"
+      >
+        <ul className="grid grid-cols-5">
+          {nav.map(({ to, label, icon: Icon }) => (
+            <li key={to}>
+              <NavLink
+                to={to}
+                end={to === '/'}
+                className={({ isActive }) =>
+                  cn(
+                    'flex min-h-16 flex-col items-center justify-center gap-1 text-xs font-medium',
+                    isActive ? 'text-primary' : 'text-muted-foreground',
+                  )
+                }
+              >
+                <Icon className="size-6" strokeWidth={1.75} aria-hidden />
+                {label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  );
+}

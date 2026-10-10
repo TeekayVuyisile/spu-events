@@ -26,3 +26,11 @@ Thumbs.db
 
 # Optional cache
 .cache/
+
+# Monorepo build output
+dist/
+*.tsbuildinfo
+coverage/
+
+# Local uploads (new app stores files outside git)
+apps/api/uploads/
