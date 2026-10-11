@@ -35,6 +35,10 @@ export const tickets = pgTable(
     pricePaidCents: integer().notNull(),
     cancelReason: ticketCancelReasonEnum(),
     cancelledAt: timestamp({ withTimezone: true }),
+    checkedInAt: timestamp({ withTimezone: true }),
+    checkedInById: uuid().references(() => users.id, { onDelete: 'set null' }),
+    /** Which gate admitted the holder ("Gate B"), for "already used" answers. */
+    checkedInGate: text(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [

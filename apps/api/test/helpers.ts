@@ -5,6 +5,7 @@ import { afterAll, beforeEach } from 'vitest';
 import { createApp, type AppDeps } from '../src/app';
 import { createDb } from '../src/db/client';
 import { createLogger } from '../src/lib/logger';
+import { inProcessBus } from '../src/lib/live-bus';
 import { hashPassword } from '../src/lib/password';
 import { PaymentDeclinedError, type PaymentProvider } from '../src/lib/payments';
 import { memoryStorage } from '../src/lib/storage';
@@ -20,7 +21,7 @@ export const { db, pool } = createDb(testDatabaseUrl());
 export function useTestDb() {
   beforeEach(async () => {
     await pool.query(
-      'truncate users, invites, sessions, events, tickets, wallet_ledger restart identity cascade',
+      'truncate users, invites, sessions, events, tickets, wallet_ledger, event_staff, scan_logs restart identity cascade',
     );
   });
   afterAll(() => pool.end());
@@ -60,6 +61,7 @@ export function buildApp(overrides: Partial<AppDeps> = {}) {
     sessionStore: new session.MemoryStore(),
     storage: memoryStorage(),
     payments: fakePayments(),
+    bus: inProcessBus(),
     ...overrides,
   });
 }

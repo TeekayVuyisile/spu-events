@@ -16,6 +16,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
+  Activity,
   ArrowUpRight,
   Ban,
   Copy,
@@ -31,6 +32,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { EventCover } from '@/components/events/event-cover';
+import { GateStaffCard } from '@/components/events/gate-staff-card';
 import { EventStatusBadge } from '@/components/events/event-status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -368,6 +370,7 @@ function Editor({ event }: { event?: AdminEvent }) {
             readOnly={readOnly}
           />
           {event && <StatusCard event={event} dirty={isDirty} onSaved={saved} />}
+          {event && event.status !== 'cancelled' && <GateStaffCard eventId={event.id} />}
         </div>
       </div>
     </div>
@@ -596,6 +599,14 @@ function StatusCard({
           <Button asChild variant="outline" className="w-full">
             <Link to={`/events/${event.slug}`} target="_blank" rel="noopener">
               View event page <ArrowUpRight aria-hidden />
+            </Link>
+          </Button>
+        )}
+
+        {event.status === 'published' && (
+          <Button asChild variant="outline" className="w-full">
+            <Link to={`/admin/events/${event.id}/live`}>
+              <Activity aria-hidden /> Live check-ins
             </Link>
           </Button>
         )}

@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
 import type { Env } from './config/env';
 import type { Db } from './db/client';
+import type { LiveBus } from './lib/live-bus';
 import type { Logger } from './lib/logger';
 import type { PaymentProvider } from './lib/payments';
 import { SESSION_COOKIE } from './lib/session';
@@ -18,6 +19,8 @@ import { authRoutes } from './modules/auth/auth.routes';
 import { authService } from './modules/auth/auth.service';
 import { adminEventsRoutes, publicEventsRoutes } from './modules/events/events.routes';
 import { eventsService } from './modules/events/events.service';
+import { adminGateRoutes, gateRoutes } from './modules/gate/gate.routes';
+import { gateService } from './modules/gate/gate.service';
 import { healthRoutes } from './modules/health/health.routes';
 import { adminInvitesRoutes, publicInvitesRoutes } from './modules/invites/invites.routes';
 import { invitesService } from './modules/invites/invites.service';
@@ -35,10 +38,20 @@ export interface AppDeps {
   sessionStore: session.Store;
   storage: StorageService;
   payments: PaymentProvider;
+  bus: LiveBus;
 }
 
 /** Builds the Express app without listening, so tests can drive it with supertest. */
-export function createApp({ env, logger, db, pingDb, sessionStore, storage, payments }: AppDeps) {
+export function createApp({
+  env,
+  logger,
+  db,
+  pingDb,
+  sessionStore,
+  storage,
+  payments,
+  bus,
+}: AppDeps) {
   const app = express();
   const users = usersRepository(db);
   const limiter = authRateLimit({ enabled: env.NODE_ENV !== 'test' });
@@ -79,16 +92,17 @@ export function createApp({ env, logger, db, pingDb, sessionStore, storage, paym
   app.use('/api/invites', publicInvitesRoutes(invites, limiter));
 
   const events = eventsService({ db, storage });
-  const tickets = ticketsService({
-    db,
-    storage,
-    signer: ticketSigner(env.TICKET_SIGNING_SECRET),
-  });
+  const signer = ticketSigner(env.TICKET_SIGNING_SECRET);
+  const tickets = ticketsService({ db, storage, signer });
+  const gate = gateService({ db, storage, signer, bus });
   app.post('/api/events/:id/tickets', ...purchaseRoute(tickets));
   app.use('/api/events', publicEventsRoutes(events));
   app.use('/api/tickets', ticketsRoutes(tickets));
   app.use('/api/wallet', walletRoutes(walletService({ db, payments })));
   app.use('/api/admin/events', adminEventsRoutes(events));
+  app.use('/api/gate', gateRoutes(gate, bus));
+  // Last among /api/admin routers: it guards everything under /api/admin it sees.
+  app.use('/api/admin', adminGateRoutes(gate, bus));
 
   app.use(notFound);
   app.use(errorHandler);

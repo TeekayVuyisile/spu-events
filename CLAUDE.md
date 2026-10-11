@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events) and 3 (wallet and tickets) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
+A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets) and 4 (gate) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
 
 ## Commands (run from repo root)
 
@@ -33,6 +33,7 @@ npm workspaces:
   - Money and capacity: debits lock the user row (`walletRepository.lockUser`) before reading the balance; ticket sales and releases lock the event row (`eventsRepository.lock`) first. Lock order is always event → ticket → user. Take the lock and read the data in **separate statements**: under READ COMMITTED, a `SELECT … FOR UPDATE` that waited still evaluates its subqueries with the pre-wait snapshot (that bug oversold events; `tickets.test.ts` guards it). Credits (refunds, top-ups) need no lock.
   - In Drizzle `sql` subqueries, reference outer columns as raw qualified SQL (`"events"."id"`): interpolated columns render unqualified in single-table selects (see `ticketsSoldSql`).
   - Payments go through `PaymentProvider` (`lib/payments.ts`, simulated for now); ticket QR codes are HMAC-signed with `TICKET_SIGNING_SECRET` (`lib/ticket-signing.ts`).
+  - Gate: check-in is one conditional `UPDATE … WHERE status = 'valid'` (`gateRepository.checkIn`); every scan is logged in `scan_logs` and returns `200 { result }` (invalid tickets are answers, not errors). Live counters use Server-Sent Events fed by a `LiveBus` (`lib/live-bus.ts`, in-process: one API instance only until it's swapped for Postgres LISTEN/NOTIFY or Redis).
   - Status changes use conditional updates (`transition(id, from, values)` in the events repository) so concurrent clicks can't both apply.
   - CSRF: `requireSameOrigin` rejects non-GET requests whose `Origin` isn't `WEB_ORIGIN`. In tests, use the `browser()` helper in `test/helpers.ts`, which sets it.
 - `apps/web`: React 19 + Vite + Tailwind v4 + shadcn-style components (`components.json`) + Motion (`motion/react`) + TanStack Query + React Router 7 (data router in `src/router.tsx`).

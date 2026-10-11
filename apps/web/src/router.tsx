@@ -83,13 +83,23 @@ export const router = createBrowserRouter([
             path: 'events/:id',
             lazy: page(() => import('@/routes/admin/event-editor'), 'EventEditorPage'),
           },
+          {
+            path: 'events/:id/live',
+            lazy: page(() => import('@/routes/admin/live-checkins'), 'LiveCheckinsPage'),
+          },
           { path: 'staff', lazy: page(() => import('@/routes/admin/staff'), 'StaffPage') },
         ],
       },
       {
         path: 'gate',
         loader: requireUser(['staff', 'admin']),
-        lazy: page(() => import('@/routes/gate'), 'GatePage'),
+        children: [
+          { index: true, lazy: page(() => import('@/routes/gate'), 'GatePage') },
+          {
+            path: ':eventId',
+            lazy: page(() => import('@/routes/gate-scanner'), 'GateScannerPage'),
+          },
+        ],
       },
     ],
   },
