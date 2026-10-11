@@ -8,7 +8,7 @@ import {
   type ReinstateUserInput,
   type SuspendUserInput,
   type WalletAdjustmentInput,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import type { Db } from '../../db/client';
 import type { User } from '../../db/schema';
 import { uniqueViolation } from '../../lib/db-errors';

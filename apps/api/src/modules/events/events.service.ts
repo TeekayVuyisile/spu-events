@@ -4,8 +4,9 @@ import {
   type AdminEventListQuery,
   type EventInput,
   type EventListQuery,
+  type EventLocation,
   type EventPage,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { randomBytes } from 'node:crypto';
 import type { Db } from '../../db/client';
 import { uniqueViolation } from '../../lib/db-errors';
@@ -31,6 +32,13 @@ export function makeSlug(title: string) {
       .slice(0, 50)
       .replace(/-+$/, '') || 'event';
   return `${base}-${randomBytes(3).toString('hex').slice(0, 4)}`;
+}
+
+/** The optional map pin as table columns: all three set, or all null. */
+function locationColumns(location: EventLocation | null) {
+  return location
+    ? { latitude: location.lat, longitude: location.lng, address: location.address }
+    : { latitude: null, longitude: null, address: null };
 }
 
 const notFound = () => AppError.notFound('Event not found');
@@ -107,8 +115,10 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
     /** New events always start as drafts. */
     async create(input: EventInput, adminId: string) {
       if (new Date(input.startsAt) <= new Date()) throw startInPast();
+      const { location, ...fields } = input;
       const event = await insertWithSlug({
-        ...input,
+        ...fields,
+        ...locationColumns(location),
         startsAt: new Date(input.startsAt),
         endsAt: new Date(input.endsAt),
         createdById: adminId,
@@ -141,10 +151,18 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
         current.status === 'published' &&
         (startsAt.getTime() !== current.startsAt.getTime() ||
           endsAt.getTime() !== current.endsAt.getTime() ||
-          input.venue !== current.venue);
+          input.venue !== current.venue ||
+          (input.location?.lat ?? null) !== current.latitude ||
+          (input.location?.lng ?? null) !== current.longitude);
+      const { location, ...values } = input;
 
       await db.transaction(async (tx) => {
-        await eventsRepository(tx).update(id, { ...input, startsAt, endsAt });
+        await eventsRepository(tx).update(id, {
+          ...values,
+          ...locationColumns(location),
+          startsAt,
+          endsAt,
+        });
         // Ticket holders need to know if when or where changed; other edits stay quiet.
         if (moved) {
           const holders = await ticketsRepository(tx).validHolderIds(id);
@@ -246,6 +264,9 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
         capacity: source.capacity,
         priceCents: source.priceCents,
         volunteersWanted: source.volunteersWanted,
+        latitude: source.latitude,
+        longitude: source.longitude,
+        address: source.address,
         coverKey,
         createdById: adminId,
       });

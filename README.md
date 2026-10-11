@@ -1,4 +1,4 @@
-# Monthati Events
+# SPU Events
 
 Campus events for Sol Plaatje University students: discover events, pay from a campus wallet, get a signed QR ticket and walk through the gate with a scan. Organisers get a live dashboard, gate tools and moderation.
 
@@ -7,18 +7,18 @@ Campus events for Sol Plaatje University students: discover events, pay from a c
 | Role | Sign in with | Try |
 |---|---|---|
 | Student | `202312345` | Buy a ticket with the wallet, open the QR, comment, apply to volunteer |
-| Gate staff | `gate@monthati.demo` | Scan tickets with a phone camera (HTTPS), or type a ticket code |
-| Admin | `admin@monthati.demo` | Dashboard, create and publish events, moderation, users and wallet adjustments |
+| Gate staff | `gate@spuevents.demo` | Scan tickets with a phone camera (HTTPS), or type a ticket code |
+| Admin | `admin@spuevents.demo` | Dashboard, create and publish events, moderation, users and wallet adjustments |
 
 Demo passwords are shared on request.
 
 ## Features
 
-**Students:** Discover with search and filters in the URL · event pages with likes, threaded comments and reactions · a photo wall once an event starts · a wallet with top-ups, withdrawals and automatic refunds · QR tickets that also work offline · volunteer applications · an inbox for ticket, refund and moderation notices.
+**Students:** Discover with search and filters in the URL · event pages with a map of the venue and Google Maps directions · likes, threaded comments and reactions · a photo wall once an event starts · a wallet with top-ups, withdrawals and automatic refunds · QR tickets that also work offline · volunteer applications · an inbox for ticket, refund and moderation notices.
 
 **Gate staff:** a phone-camera scanner with clear admit, already used, wrong event and cancelled results, plus a live check-in counter shared by every gate.
 
-**Admins:** a dashboard (revenue net of refunds, tickets sold, check-in rate, active students, daily sales) · the event lifecycle (draft → published → cancelled, with refunds) · staff invites and gate assignments · a moderation queue · user management with an audit log · attendee CSV export.
+**Admins:** a dashboard (revenue net of refunds, tickets sold, check-in rate, active students, daily sales) · the event lifecycle (draft → published → cancelled, with refunds) · capacity limits that can't oversell · location search with suggestions and a draggable map pin · staff invites and gate assignments · a moderation queue · user management with an audit log · attendee CSV export.
 
 ## Engineering highlights
 
@@ -75,7 +75,7 @@ Requirements: Node 22.12 or later and PostgreSQL.
 ```sh
 npm install
 cp apps/api/.env.example apps/api/.env   # set DATABASE_URL and the two secrets
-DEMO_PASSWORD=choose-one npm run db:setup -w @monthati/api   # migrate and seed demo data
+DEMO_PASSWORD=choose-one npm run db:setup -w @spu-events/api   # migrate and seed demo data
 npm run dev                               # web on :5173, API on :4000
 ```
 

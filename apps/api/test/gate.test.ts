@@ -40,7 +40,7 @@ async function holder(eventId: string, app = buildApp()) {
   const [ticket] = await db
     .insert(tickets)
     .values({
-      code: `MTH-${randomUUID().slice(0, 4).toUpperCase()}-TEST`,
+      code: `SPU-${randomUUID().slice(0, 4).toUpperCase()}-TEST`,
       eventId,
       userId: user.id,
       pricePaidCents: 0,
@@ -135,7 +135,7 @@ describe('scanning', () => {
       { payload: forged },
       { payload: tampered },
       { payload: 'hello' },
-      { code: 'MTH-ZZZZ-ZZZZ' },
+      { code: 'SPU-ZZZZ-ZZZZ' },
     ]) {
       const res = await scan(agent, event.id, body);
       expect(res.body.result).toBe('invalid');
@@ -191,7 +191,7 @@ describe('scanning', () => {
     const event = await liveEvent();
     const { agent } = await staffFor(event.id);
     expect((await scan(agent, event.id, {})).status).toBe(400);
-    expect((await scan(agent, event.id, { payload: 'x', code: 'MTH-AAAA-AAAA' })).status).toBe(400);
+    expect((await scan(agent, event.id, { payload: 'x', code: 'SPU-AAAA-AAAA' })).status).toBe(400);
   });
 });
 

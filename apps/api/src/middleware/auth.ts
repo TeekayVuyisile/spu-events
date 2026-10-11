@@ -1,4 +1,4 @@
-import type { Role } from '@monthati/shared';
+import type { Role } from '@spu-events/shared';
 import type { RequestHandler } from 'express';
 import { AppError } from '../lib/errors';
 import { toSessionUser, type UsersRepository } from '../modules/users/users.repository';

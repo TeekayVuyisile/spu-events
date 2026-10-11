@@ -1,4 +1,4 @@
-import type { SessionUser } from '@monthati/shared';
+import type { SessionUser } from '@spu-events/shared';
 import { eq } from 'drizzle-orm';
 import type { Executor } from '../../db/client';
 import { users, type NewUser, type User } from '../../db/schema';

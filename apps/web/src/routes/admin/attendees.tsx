@@ -1,4 +1,4 @@
-import { formatCents } from '@monthati/shared';
+import { formatCents } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Download, Loader2, Search, Users } from 'lucide-react';
 import { useState } from 'react';

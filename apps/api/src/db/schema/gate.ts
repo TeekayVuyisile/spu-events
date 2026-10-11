@@ -1,4 +1,4 @@
-import { SCAN_RESULTS } from '@monthati/shared';
+import { SCAN_RESULTS } from '@spu-events/shared';
 import { index, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { events } from './events';
 import { tickets } from './tickets';

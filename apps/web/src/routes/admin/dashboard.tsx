@@ -6,7 +6,7 @@ import {
   formatDay,
   type Dashboard,
   type DashboardRange,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowDownRight,

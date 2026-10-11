@@ -1,4 +1,4 @@
-import { CAMPUS_TZ, type EventCategory } from '@monthati/shared';
+import { CAMPUS_TZ, type EventCategory } from '@spu-events/shared';
 import { sql } from 'drizzle-orm';
 import type { Executor } from '../../db/client';
 

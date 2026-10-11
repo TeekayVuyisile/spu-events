@@ -3,7 +3,7 @@ import {
   commentInputSchema,
   photoCaptionSchema,
   reactionKindSchema,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { Router } from 'express';
 import { z } from 'zod';
 import { requireAuth } from '../../middleware/auth';

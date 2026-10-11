@@ -1,4 +1,4 @@
-import { formatEventWhen, type ScanLogEntry, type ScanResultKind } from '@monthati/shared';
+import { formatEventWhen, type ScanLogEntry, type ScanResultKind } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeft,

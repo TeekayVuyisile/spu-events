@@ -1,4 +1,4 @@
-import { formatCents, type EventDetail } from '@monthati/shared';
+import { formatCents, type EventDetail } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Ticket, Users, Wallet } from 'lucide-react';
 import { useState } from 'react';

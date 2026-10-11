@@ -1,4 +1,4 @@
-import { dashboardQuerySchema } from '@monthati/shared';
+import { dashboardQuerySchema } from '@spu-events/shared';
 import { Router } from 'express';
 import { requireRole } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';

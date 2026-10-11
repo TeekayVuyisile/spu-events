@@ -1,4 +1,4 @@
-import { adminEventListQuerySchema, formatEventWhen, type EventStatus } from '@monthati/shared';
+import { adminEventListQuerySchema, formatEventWhen, type EventStatus } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { CalendarPlus, Loader2, Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';

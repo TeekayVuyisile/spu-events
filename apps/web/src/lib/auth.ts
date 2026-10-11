@@ -5,7 +5,7 @@ import type {
   Role,
   SessionUser,
   SignupInput,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
 import { redirect, type LoaderFunctionArgs } from 'react-router';
 import { api } from '@/lib/api';

@@ -3,7 +3,7 @@ import {
   reinstateUserSchema,
   suspendUserSchema,
   walletAdjustmentSchema,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { Router } from 'express';
 import { z } from 'zod';
 import { requireRole } from '../../middleware/auth';

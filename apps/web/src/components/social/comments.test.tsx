@@ -1,4 +1,4 @@
-import type { Comment, CommentPage, EventDetail, MeResponse } from '@monthati/shared';
+import type { Comment, CommentPage, EventDetail, MeResponse } from '@spu-events/shared';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';

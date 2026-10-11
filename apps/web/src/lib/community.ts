@@ -7,7 +7,7 @@ import type {
   VolunteerApplicant,
   VolunteerApplication,
   VolunteerApplyInput,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import {
   infiniteQueryOptions,
   queryOptions,

@@ -1,4 +1,4 @@
-import type { EventDetail } from '@monthati/shared';
+import type { EventDetail } from '@spu-events/shared';
 import { Heart } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router';

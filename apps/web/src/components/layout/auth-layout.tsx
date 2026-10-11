@@ -8,7 +8,7 @@ function Logo() {
   return (
     <Link to="/" className="flex items-center gap-2.5 font-display text-xl font-extrabold">
       <span aria-hidden className="size-7 rounded-lg bg-gradient-to-br from-primary to-cta" />
-      Monthati
+      SPU Events
     </Link>
   );
 }
@@ -30,7 +30,7 @@ function TicketStub() {
       </div>
       <div className="perforation mx-6" />
       <div className="flex items-center justify-between p-6">
-        <span className="tabular text-sm text-muted-foreground">MTH-7Q4K-29XD</span>
+        <span className="tabular text-sm text-muted-foreground">SPU-7Q4K-29XD</span>
         <span className="tabular text-sm text-success">VALID</span>
       </div>
     </motion.div>

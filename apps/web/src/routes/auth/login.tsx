@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, type LoginInput } from '@monthati/shared';
+import { loginSchema, type LoginInput } from '@spu-events/shared';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -74,7 +74,7 @@ export function LoginPage() {
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
-        New to Monthati?{' '}
+        New to SPU Events?{' '}
         <Link
           to={next ? `/signup?next=${encodeURIComponent(next)}` : '/signup'}
           className="font-semibold text-primary underline-offset-4 hover:underline"

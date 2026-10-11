@@ -1,4 +1,4 @@
-import { TICKET_SCOPES } from '@monthati/shared';
+import { TICKET_SCOPES } from '@spu-events/shared';
 import { Router, type RequestHandler } from 'express';
 import { z } from 'zod';
 import { requireRole } from '../../middleware/auth';

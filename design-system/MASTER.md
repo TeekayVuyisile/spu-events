@@ -1,4 +1,4 @@
-# Monthati Events Design System (MASTER)
+# SPU Events Design System (MASTER)
 
 The single source of truth for UI. Page-specific deviations live in `design-system/pages/<page>.md` and override this file.
 Curated from ui-ux-pro-max results: style "Vibrant & Block-based" + "Bento Grids" + "Dark Mode (OLED)", the "Event Management" palette, the "Geometric Modern" type pairing, and shadcn theming guidelines.

@@ -6,7 +6,7 @@ import {
   WITHDRAW_MIN_CENTS,
   type LedgerEntry,
   type LedgerKind,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowDownLeft,
@@ -230,7 +230,7 @@ function AmountForm({
         },
         onError: (err) =>
           setError(
-            err instanceof ApiRequestError ? err.message : 'Couldn’t reach Monthati. Try again.',
+            err instanceof ApiRequestError ? err.message : 'Couldn’t reach SPU Events. Try again.',
           ),
       },
     );

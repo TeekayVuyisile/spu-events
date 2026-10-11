@@ -1,4 +1,4 @@
-import type { Notification, NotificationKind } from '@monthati/shared';
+import type { Notification, NotificationKind } from '@spu-events/shared';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import {
   CalendarClock,

@@ -3,7 +3,7 @@ import {
   REPORT_REASONS,
   type ReportReason,
   type ReportTarget,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';

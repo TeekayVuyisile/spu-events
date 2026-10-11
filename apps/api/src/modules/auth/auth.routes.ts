@@ -1,4 +1,4 @@
-import { loginSchema, signupSchema } from '@monthati/shared';
+import { loginSchema, signupSchema } from '@spu-events/shared';
 import { Router, type RequestHandler } from 'express';
 import { validate } from '../../middleware/validate';
 import { authController } from './auth.controller';

@@ -1,4 +1,4 @@
-import type { ScanResult } from '@monthati/shared';
+import type { ScanResult } from '@spu-events/shared';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -9,7 +9,7 @@ import { GateScannerPage } from './gate-scanner';
 // The real camera needs getUserMedia; a button stands in for "the camera read a QR".
 vi.mock('@/components/gate/qr-camera', () => ({
   QrCamera: ({ onScan }: { onScan: (text: string) => void }) => (
-    <button onClick={() => onScan('MTH1.qr-payload.sig')}>fake camera scan</button>
+    <button onClick={() => onScan('SPU1.qr-payload.sig')}>fake camera scan</button>
   ),
 }));
 
@@ -45,7 +45,7 @@ const admitted: ScanResult = {
   message: 'Admit',
   stats: stats(42),
   ticket: {
-    code: 'MTH-7Q4K-29XD',
+    code: 'SPU-7Q4K-29XD',
     holderName: 'Lerato Mokoena',
     holderAvatarUrl: null,
     checkedInAt: '2030-10-24T17:42:00.000Z',
@@ -113,7 +113,7 @@ describe('GateScannerPage', () => {
       'Already scanned at 19:42 by Gate B',
     );
     const scanCall = fetch.mock.calls.find(([url]) => String(url).endsWith('/scan'))!;
-    expect(JSON.parse(scanCall[1]!.body as string)).toMatchObject({ code: 'MTH-7Q4K-29XD' });
+    expect(JSON.parse(scanCall[1]!.body as string)).toMatchObject({ code: 'SPU-7Q4K-29XD' });
   });
 
   it('updates the live counter from the stream', async () => {

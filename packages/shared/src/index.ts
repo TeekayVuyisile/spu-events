@@ -11,3 +11,4 @@ export * from './social';
 export * from './community';
 export * from './notifications';
 export * from './admin';
+export * from './places';

@@ -1,4 +1,4 @@
-import type { Notification, NotificationPage } from '@monthati/shared';
+import type { Notification, NotificationPage } from '@spu-events/shared';
 import type { Db } from '../../db/client';
 import { decodeCursor, encodeCursor } from '../../lib/cursor';
 import { notificationsRepository } from './notifications.repository';

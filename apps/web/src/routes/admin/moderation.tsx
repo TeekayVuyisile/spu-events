@@ -1,4 +1,8 @@
-import { REPORT_REASON_LABELS, type ModerationAction, type ModerationItem } from '@monthati/shared';
+import {
+  REPORT_REASON_LABELS,
+  type ModerationAction,
+  type ModerationItem,
+} from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Ban, Check, Flag, Loader2, ShieldCheck, Trash2, TriangleAlert } from 'lucide-react';
 import { useState } from 'react';

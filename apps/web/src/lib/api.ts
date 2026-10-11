@@ -1,4 +1,4 @@
-import { apiErrorSchema, type ApiError } from '@monthati/shared';
+import { apiErrorSchema, type ApiError } from '@spu-events/shared';
 
 /** Thrown for any non-2xx response; carries the API's structured error. */
 export class ApiRequestError extends Error {

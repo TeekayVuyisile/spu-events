@@ -5,7 +5,7 @@ import {
   type CreateInviteInput,
   type Invite,
   type InviteStatus,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Ban,

@@ -5,7 +5,7 @@ import {
   VOLUNTEER_STATUSES,
   volunteerApplySchema,
   volunteerDecisionSchema,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { Router } from 'express';
 import { z } from 'zod';
 import { requireAuth, requireRole } from '../../middleware/auth';

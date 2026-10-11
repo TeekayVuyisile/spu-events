@@ -1,4 +1,4 @@
-import type { LiveGateUpdate } from '@monthati/shared';
+import type { LiveGateUpdate } from '@spu-events/shared';
 import type { RequestHandler, Response } from 'express';
 import type { LiveBus } from '../../lib/live-bus';
 import { liveChannel, type GateService } from './gate.service';

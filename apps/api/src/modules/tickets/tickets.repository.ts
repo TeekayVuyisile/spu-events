@@ -1,4 +1,4 @@
-import type { TicketCancelReason, TicketScope } from '@monthati/shared';
+import type { TicketCancelReason, TicketScope } from '@spu-events/shared';
 import { and, asc, desc, eq, getTableColumns, gte, lt, ne, or, sql } from 'drizzle-orm';
 import type { Executor } from '../../db/client';
 import { events, tickets } from '../../db/schema';

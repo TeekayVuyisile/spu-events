@@ -1,4 +1,4 @@
-import type { VolunteerApplicant, VolunteerStatus } from '@monthati/shared';
+import type { VolunteerApplicant, VolunteerStatus } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { HandHelping, Loader2 } from 'lucide-react';
 import { useState } from 'react';

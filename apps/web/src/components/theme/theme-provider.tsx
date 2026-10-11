@@ -1,7 +1,7 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import { ThemeContext, type Theme } from './theme-context';
 
-const STORAGE_KEY = 'mth-theme';
+const STORAGE_KEY = 'spu-theme';
 
 function readTheme(): Theme {
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light';

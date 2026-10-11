@@ -5,7 +5,7 @@ import {
   type TopUpInput,
   type Wallet,
   type WithdrawInput,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import type { Db } from '../../db/client';
 import { uniqueViolation } from '../../lib/db-errors';
 import { AppError } from '../../lib/errors';

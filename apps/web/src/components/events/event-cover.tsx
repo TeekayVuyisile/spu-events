@@ -1,4 +1,4 @@
-import type { EventSummary } from '@monthati/shared';
+import type { EventSummary } from '@spu-events/shared';
 import { motion } from 'motion/react';
 import { spring } from '@/lib/motion';
 import { cn } from '@/lib/utils';

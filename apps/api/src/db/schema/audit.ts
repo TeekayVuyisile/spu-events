@@ -1,4 +1,4 @@
-import { AUDIT_ACTIONS } from '@monthati/shared';
+import { AUDIT_ACTIONS } from '@spu-events/shared';
 import { index, integer, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from './users';
 

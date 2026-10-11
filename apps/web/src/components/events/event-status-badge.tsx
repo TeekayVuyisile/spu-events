@@ -1,4 +1,4 @@
-import type { EventSummary } from '@monthati/shared';
+import type { EventSummary } from '@spu-events/shared';
 import { Ban, CircleCheck, Flag, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { hasEnded } from '@/lib/events';

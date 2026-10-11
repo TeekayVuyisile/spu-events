@@ -1,4 +1,4 @@
-import { CANCEL_REASONS, LEDGER_KINDS, TICKET_STATUSES } from '@monthati/shared';
+import { CANCEL_REASONS, LEDGER_KINDS, TICKET_STATUSES } from '@spu-events/shared';
 import { sql } from 'drizzle-orm';
 import {
   check,
@@ -22,7 +22,7 @@ export const tickets = pgTable(
   'tickets',
   {
     id: uuid().primaryKey().defaultRandom(),
-    /** Short code for manual entry at the gate (MTH-7Q4K-29XD). */
+    /** Short code for manual entry at the gate (SPU-7Q4K-29XD). */
     code: text().notNull().unique(),
     eventId: uuid()
       .notNull()

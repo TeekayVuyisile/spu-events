@@ -7,7 +7,7 @@ import type {
   VolunteerApplication,
   VolunteerApplyInput,
   VolunteerStatus,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import type { Db } from '../../db/client';
 import type { NewNotification } from '../../db/schema';
 import { uniqueViolation } from '../../lib/db-errors';

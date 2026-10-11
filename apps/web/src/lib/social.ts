@@ -7,7 +7,7 @@ import type {
   PhotoPage,
   ReactionKind,
   ReactionSummary,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import {
   infiniteQueryOptions,
   useMutation,

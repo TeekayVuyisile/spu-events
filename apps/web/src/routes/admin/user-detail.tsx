@@ -8,7 +8,7 @@ import {
   type AdminUserDetail,
   type AuditAction,
   type SuspendUserInput,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeft,

@@ -1,5 +1,5 @@
 import { QueryCache, QueryClient } from '@tanstack/react-query';
-import type { MeResponse } from '@monthati/shared';
+import type { MeResponse } from '@spu-events/shared';
 import { ApiRequestError } from '@/lib/api';
 
 export const meKey = ['me'] as const;

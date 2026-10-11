@@ -1,4 +1,4 @@
-import type { AdminEvent, EventDetail, EventSummary } from '@monthati/shared';
+import type { AdminEvent, EventDetail, EventSummary } from '@spu-events/shared';
 import type { EventRow } from '../../db/schema';
 import type { StorageService } from '../../lib/storage';
 
@@ -32,6 +32,10 @@ export function eventMappers(storage: StorageService) {
   ): EventDetail => ({
     ...toSummary(e),
     description: e.description,
+    location:
+      e.latitude !== null && e.longitude !== null && e.address !== null
+        ? { lat: e.latitude, lng: e.longitude, address: e.address }
+        : null,
     volunteersWanted: e.volunteersWanted,
     cancelledAt: e.cancelledAt?.toISOString() ?? null,
     cancellationReason: e.cancellationReason,

@@ -1,4 +1,4 @@
-import type { EventDetail, MeResponse, SessionUser } from '@monthati/shared';
+import type { EventDetail, MeResponse, SessionUser } from '@spu-events/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -36,6 +36,7 @@ const event = (overrides: Partial<EventDetail> = {}): EventDetail => ({
   status: 'published',
   coverUrl: null,
   description: '',
+  location: null,
   volunteersWanted: false,
   cancelledAt: null,
   cancellationReason: null,

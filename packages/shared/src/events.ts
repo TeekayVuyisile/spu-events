@@ -33,6 +33,14 @@ export type EventStatus = (typeof EVENT_STATUSES)[number];
 export const MAX_PRICE_CENTS = 1_000_000; // R10 000
 export const MAX_CAPACITY = 50_000;
 
+/** A pinned map location: coordinates plus the address the admin picked. */
+export const eventLocationSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  address: z.string().trim().min(2, 'Search for a place first').max(200),
+});
+export type EventLocation = z.infer<typeof eventLocationSchema>;
+
 /** What an admin submits to create or edit an event. Times are UTC ISO strings. */
 export const eventInputSchema = z
   .object({
@@ -57,6 +65,8 @@ export const eventInputSchema = z
       .min(0, 'Price can’t be negative')
       .max(MAX_PRICE_CENTS, 'At most R10 000'),
     volunteersWanted: z.boolean().default(false),
+    /** Optional pin on the map; the venue stays the human name ("Great Hall"). */
+    location: eventLocationSchema.nullable().default(null),
   })
   .refine((e) => new Date(e.endsAt) > new Date(e.startsAt), {
     path: ['endsAt'],
@@ -109,6 +119,7 @@ export interface EventSummary {
 
 export interface EventDetail extends EventSummary {
   description: string;
+  location: EventLocation | null;
   volunteersWanted: boolean;
   cancelledAt: string | null;
   cancellationReason: string | null;

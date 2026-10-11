@@ -1,10 +1,11 @@
-import type { Role } from '@monthati/shared';
+import type { Role } from '@spu-events/shared';
 import session from 'express-session';
 import request from 'supertest';
 import { afterAll, beforeEach } from 'vitest';
 import { createApp, type AppDeps } from '../src/app';
 import { createDb } from '../src/db/client';
 import { createLogger } from '../src/lib/logger';
+import { fakeGeocoder } from '../src/lib/geocoder';
 import { inProcessBus } from '../src/lib/live-bus';
 import { hashPassword } from '../src/lib/password';
 import { PaymentDeclinedError, type PaymentProvider } from '../src/lib/payments';
@@ -62,6 +63,7 @@ export function buildApp(overrides: Partial<AppDeps> = {}) {
     storage: memoryStorage(),
     payments: fakePayments(),
     bus: inProcessBus(),
+    geocoder: fakeGeocoder(),
     ...overrides,
   });
 }

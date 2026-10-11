@@ -50,7 +50,7 @@ describe('buying a ticket', () => {
     expect(res.status).toBe(201);
     const ticket = res.body.ticket;
     expect(ticket).toMatchObject({ status: 'valid', pricePaidCents: 15000 });
-    expect(ticket.code).toMatch(/^MTH-\w{4}-\w{4}$/);
+    expect(ticket.code).toMatch(/^SPU-\w{4}-\w{4}$/);
     expect(ticket.event).toMatchObject({ id: event.id, ticketsSold: 1 });
     expect(ticketSigner(TICKET_SECRET).verify(ticket.qrPayload)).toBe(ticket.id);
 

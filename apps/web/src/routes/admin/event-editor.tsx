@@ -7,12 +7,13 @@ import {
   COVER_TYPES,
   EVENT_CATEGORIES,
   eventInputSchema,
+  eventLocationSchema,
   isoToCampusInput,
   randsToCents,
   type AdminEvent,
   type CancelEventInput,
   type EventInput,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
@@ -28,12 +29,13 @@ import {
   Users,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { EventCover } from '@/components/events/event-cover';
 import { GateStaffCard } from '@/components/events/gate-staff-card';
+import { LocationPicker } from '@/components/events/location-picker';
 import { VolunteersCard } from '@/components/events/volunteers-card';
 import { EventStatusBadge } from '@/components/events/event-status-badge';
 import { Button } from '@/components/ui/button';
@@ -68,6 +70,7 @@ const formSchema = z
     capacity: z.string(),
     priceCents: z.string(),
     volunteersWanted: z.boolean(),
+    location: eventLocationSchema.nullable(),
   })
   .transform((v, ctx): EventInput => {
     const result = eventInputSchema.safeParse({
@@ -95,6 +98,7 @@ const emptyForm: FormValues = {
   capacity: '',
   priceCents: '0',
   volunteersWanted: false,
+  location: null,
 };
 
 function toForm(e: AdminEvent): FormValues {
@@ -109,6 +113,7 @@ function toForm(e: AdminEvent): FormValues {
     priceCents:
       e.priceCents % 100 === 0 ? String(e.priceCents / 100) : (e.priceCents / 100).toFixed(2),
     volunteersWanted: e.volunteersWanted,
+    location: e.location,
   };
 }
 
@@ -164,6 +169,7 @@ function Editor({ event }: { event?: AdminEvent }) {
     disabled: readOnly,
   });
   const { errors, isDirty, isSubmitting } = form.formState;
+  const location = useWatch({ control: form.control, name: 'location' });
 
   /** Keeps every cached view of this event in step after a change. */
   function saved(updated: AdminEvent) {
@@ -263,6 +269,30 @@ function Editor({ event }: { event?: AdminEvent }) {
               >
                 {(c) => <Textarea {...c} {...form.register('description')} rows={6} />}
               </Field>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Location</CardTitle>
+              <CardDescription>
+                Optional. Students get a map and a Google Maps link for directions.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <LocationPicker
+                value={location}
+                disabled={readOnly}
+                error={errors.location?.message ?? errors.location?.address?.message}
+                onChange={(next) =>
+                  form.setValue('location', next, { shouldDirty: true, shouldValidate: true })
+                }
+                onPick={(place) => {
+                  if (!form.getValues('venue').trim()) {
+                    form.setValue('venue', place.name.slice(0, 120), { shouldDirty: true });
+                  }
+                }}
+              />
             </CardContent>
           </Card>
 

@@ -6,7 +6,7 @@ import {
   type EventListQuery,
   type EventPage,
   type EventSummary,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 

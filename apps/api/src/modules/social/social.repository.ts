@@ -1,4 +1,4 @@
-import type { ReactionKind } from '@monthati/shared';
+import type { ReactionKind } from '@spu-events/shared';
 import { and, asc, desc, eq, inArray, isNull, ne, sql, type SQL } from 'drizzle-orm';
 import type { Executor } from '../../db/client';
 import {

@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-export const SESSION_COOKIE = 'mth.sid';
+export const SESSION_COOKIE = 'spu.sid';
 
 /** Logs the user in on a fresh session id, which prevents session fixation. */
 export async function startSession(req: Request, userId: string) {

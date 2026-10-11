@@ -27,16 +27,16 @@ describe('ticket QR signing', () => {
   });
 
   it('rejects junk', () => {
-    for (const junk of ['', 'hello', 'MTH1..', `MTH0.${id}.abc`, `${signer.payload(id)}.extra`]) {
+    for (const junk of ['', 'hello', 'SPU1..', `SPU0.${id}.abc`, `${signer.payload(id)}.extra`]) {
       expect(signer.verify(junk)).toBeNull();
     }
   });
 });
 
 describe('ticket codes', () => {
-  it('look like MTH-XXXX-XXXX without ambiguous characters', () => {
+  it('look like SPU-XXXX-XXXX without ambiguous characters', () => {
     for (let i = 0; i < 200; i++) {
-      expect(generateTicketCode()).toMatch(/^MTH-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/);
+      expect(generateTicketCode()).toMatch(/^SPU-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/);
     }
   });
 });

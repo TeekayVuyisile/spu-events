@@ -20,7 +20,7 @@ export function cancelDeadline(ticket: { pricePaidCents: number }, event: { star
 
 export interface Ticket {
   id: string;
-  /** Short human-readable code for manual entry at the gate: MTH-7Q4K-29XD. */
+  /** Short human-readable code for manual entry at the gate: SPU-7Q4K-29XD. */
   code: string;
   status: TicketStatus;
   pricePaidCents: number;

@@ -6,7 +6,7 @@
  *
  * The password is prompted for (hidden), or read from ADMIN_PASSWORD for scripts.
  */
-import { emailSchema, passwordSchema } from '@monthati/shared';
+import { emailSchema, passwordSchema } from '@spu-events/shared';
 import { createInterface } from 'node:readline';
 import { parseArgs } from 'node:util';
 import { z } from 'zod';

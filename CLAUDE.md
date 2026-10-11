@@ -14,7 +14,7 @@ The app was rebuilt from an older Express/EJS version, which was removed in phas
 - `npm run lint` · `npm run typecheck` · `npm run format` · `npm run build`. CI (`.github/workflows/ci.yml`) runs format:check, lint, typecheck, test and build.
 - Database: change `apps/api/src/db/schema/*`, run `npm run db:generate -- --name <change>`, then run `npm run db:migrate`. Never hand-edit an applied migration in `apps/api/drizzle/`.
 - First admin: `npm run user:create-admin -- --email <email> --first-name <name> --last-name <name>` (prompts for the password, or reads `ADMIN_PASSWORD`). Every other staff or admin account comes from an invite.
-- Demo data: `DEMO_PASSWORD=… npm run db:setup -w @monthati/api` migrates, then seeds an **empty** database (`src/seed/demo.ts`). In production, `npm run release -w @monthati/api` (`src/release.ts`) does the same before every start.
+- Demo data: `DEMO_PASSWORD=… npm run db:setup -w @spu-events/api` migrates, then seeds an **empty** database (`src/seed/demo.ts`). In production, `npm run release -w @spu-events/api` (`src/release.ts`) does the same before every start.
 - Config: `apps/api/.env` (copy `.env.example`; URL-encode special characters in the password).
 ## Architecture
 
@@ -40,6 +40,7 @@ npm workspaces:
   - Production (`docs/DEPLOYMENT.md`, `render.yaml`): one Render service, where the API also serves `apps/web/dist` (`WEB_DIST_DIR`, `lib/web-app.ts`) so the site stays same-origin, plus Neon Postgres. Uploads use `STORAGE=database` (`lib/db-storage.ts`, the `uploads` table) because Render's disk is ephemeral. Helmet's CSP is on, so no inline scripts (the pre-paint theme script lives in `apps/web/public/theme.js`).
   - The demo seed goes through the real services; only history (past events, backdated sales and check-ins) is written as SQL. Cover art is generated (`seed/covers.ts`), so the repo ships no third-party images.
   - CSV downloads go through `toCsv` (`lib/csv.ts`), which escapes cells and defuses spreadsheet formulas.
+  - Maps: an event's optional pin is `latitude`/`longitude`/`address` on `events` (all or none, enforced by a check constraint), sent as `location` in the API. Admin place search goes through a `Geocoder` (`lib/geocoder.ts`; Photon in production, restricted to South Africa and biased to campus; `fakeGeocoder` in tests) at `/api/admin/places`, so the browser never calls third parties for search. Moving the pin notifies ticket holders like a venue change.
   - Status changes use conditional updates (`transition(id, from, values)` in the events repository) so concurrent clicks can't both apply.
   - CSRF: `requireSameOrigin` rejects non-GET requests whose `Origin` isn't `WEB_ORIGIN`. In tests, use the `browser()` helper in `test/helpers.ts`, which sets it.
 - `apps/web`: React 19 + Vite + Tailwind v4 + shadcn-style components (`components.json`) + Motion (`motion/react`) + TanStack Query + React Router 7 (data router in `src/router.tsx`).
@@ -49,6 +50,7 @@ npm workspaces:
   - Admin, gate and auth routes are code-split with the `page(() => import(...), 'Name')` helper in `router.tsx`; keep new admin pages lazy so students don't download them.
   - Accessibility: `CardTitle` is an `h2` (cards sit under the page `h1`; never skip levels). Status colours are tuned so text passes 4.5:1 on its own 10% tint, so check contrast with axe before changing them. Charts (Recharts) are `aria-hidden` with a table view as the accessible alternative. Use `Segmented` for one-of-n toggle groups (it adds the 44px hit area).
   - Filters that change what a page shows (Discover, admin lists) live in the URL search params, parsed with the shared Zod query schema.
+  - Maps: render through `MapView` (`components/maps/map-view.tsx`), which lazy-loads plain Leaflet so only pages with a map download it. Tiles come from tile.openstreetmap.org (allowed in the CSP `img-src`); the tile layer sends `strict-origin-when-cross-origin` because OSM blocks requests without a Referer and helmet's page policy is `no-referrer`. In tests, mock `@/components/maps/map-view`.
 
 ## Domain rules that span files
 

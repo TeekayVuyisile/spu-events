@@ -15,7 +15,7 @@ export function testDatabaseUrl() {
   if (!url) {
     throw new Error(
       'TEST_DATABASE_URL is not set. Add it to apps/api/.env (see .env.example), e.g.\n' +
-        '  TEST_DATABASE_URL=postgres://postgres:password@localhost:5432/monthati_test',
+        '  TEST_DATABASE_URL=postgres://postgres:password@localhost:5432/spu_events_test',
     );
   }
   if (!new URL(url).pathname.includes('test')) {

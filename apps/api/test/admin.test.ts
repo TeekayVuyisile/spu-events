@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { formatCents } from '@monthati/shared';
+import { formatCents } from '@spu-events/shared';
 import { describe, expect, it } from 'vitest';
 import { events, tickets } from '../src/db/schema';
 import { toCsv } from '../src/lib/csv';

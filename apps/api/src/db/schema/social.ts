@@ -1,4 +1,4 @@
-import { REACTIONS } from '@monthati/shared';
+import { REACTIONS } from '@spu-events/shared';
 import { sql } from 'drizzle-orm';
 import {
   type AnyPgColumn,

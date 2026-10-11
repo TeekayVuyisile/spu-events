@@ -1,4 +1,4 @@
-import { ROLES } from '@monthati/shared';
+import { ROLES } from '@spu-events/shared';
 import { pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const roleEnum = pgEnum('role', ROLES);

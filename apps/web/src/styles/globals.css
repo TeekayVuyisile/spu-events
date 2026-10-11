@@ -148,3 +148,24 @@
     translate: -50% -50%;
   }
 }
+
+/* Map pin (components/maps/location-map.tsx): Leaflet's divIcon minus its default white box. */
+.location-pin {
+  background: none;
+  border: none;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
+}
+
+/* Leaflet's fonts and controls follow the app's theme. */
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--muted);
+}
+.dark .leaflet-control-zoom a,
+.dark .leaflet-control-attribution {
+  background: var(--card);
+  color: var(--foreground);
+}
+.dark .leaflet-control-attribution a {
+  color: var(--primary);
+}

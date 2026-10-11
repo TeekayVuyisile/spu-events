@@ -1,4 +1,4 @@
-import { passwordSchema } from '@monthati/shared';
+import { passwordSchema } from '@spu-events/shared';
 import { z } from 'zod';
 
 const envSchema = z.object({

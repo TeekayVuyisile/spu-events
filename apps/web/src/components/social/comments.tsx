@@ -4,7 +4,7 @@ import {
   type Comment,
   type EventDetail,
   type ReactionKind,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import {
   Flag,

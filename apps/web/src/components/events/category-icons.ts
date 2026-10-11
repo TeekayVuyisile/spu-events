@@ -1,4 +1,4 @@
-import type { EventCategory } from '@monthati/shared';
+import type { EventCategory } from '@spu-events/shared';
 import {
   Briefcase,
   GraduationCap,

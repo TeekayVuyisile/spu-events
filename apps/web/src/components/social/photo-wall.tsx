@@ -6,7 +6,7 @@ import {
   formatTime,
   type EventDetail,
   type Photo,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Camera, Flag, Heart, Images, Lock, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';

@@ -1,4 +1,4 @@
-import { dateBlock, formatEventWhen, TICKET_SCOPES, type TicketScope } from '@monthati/shared';
+import { dateBlock, formatEventWhen, TICKET_SCOPES, type TicketScope } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { MapPin, Ticket as TicketIcon } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router';

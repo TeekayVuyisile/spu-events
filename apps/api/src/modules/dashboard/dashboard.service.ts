@@ -3,7 +3,7 @@ import {
   isoToCampusInput,
   type Dashboard,
   type DashboardRange,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import type { Db } from '../../db/client';
 import { dashboardRepository } from './dashboard.repository';
 

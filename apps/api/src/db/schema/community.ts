@@ -4,7 +4,7 @@ import {
   REPORT_REASONS,
   REPORT_TARGETS,
   VOLUNTEER_STATUSES,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { sql } from 'drizzle-orm';
 import { index, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { events } from './events';

@@ -1,4 +1,4 @@
-import type { ApiError } from '@monthati/shared';
+import type { ApiError } from '@spu-events/shared';
 import type { ErrorRequestHandler, RequestHandler } from 'express';
 import { AppError } from '../lib/errors';
 

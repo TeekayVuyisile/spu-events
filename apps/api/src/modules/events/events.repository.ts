@@ -3,7 +3,7 @@ import {
   type AdminEventListQuery,
   type EventListQuery,
   type EventStatus,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import {
   and,
   asc,

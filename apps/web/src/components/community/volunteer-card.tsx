@@ -4,7 +4,7 @@ import {
   type EventDetail,
   type VolunteerApplyInput,
   type VolunteerStatus,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Ban, CircleCheck, Clock, HandHelping, type LucideIcon } from 'lucide-react';
 import { useState } from 'react';

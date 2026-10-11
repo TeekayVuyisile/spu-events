@@ -1,4 +1,4 @@
-import type { Health } from '@monthati/shared';
+import type { Health } from '@spu-events/shared';
 import { Router } from 'express';
 
 export function healthRoutes(pingDb: () => Promise<boolean>) {

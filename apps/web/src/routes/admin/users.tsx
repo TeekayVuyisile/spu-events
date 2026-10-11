@@ -4,7 +4,7 @@ import {
   type AdminUserListQuery,
   type Role,
   type UserStatus,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Ban, ChevronLeft, ChevronRight, Loader2, Search, UserRoundSearch } from 'lucide-react';
 import { useEffect, useState } from 'react';

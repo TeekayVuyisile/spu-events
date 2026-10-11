@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { acceptInviteSchema, PASSWORD_MIN, type InvitePreview } from '@monthati/shared';
+import { acceptInviteSchema, PASSWORD_MIN, type InvitePreview } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Hourglass, Loader2, ShieldCheck } from 'lucide-react';
 import { useForm } from 'react-hook-form';

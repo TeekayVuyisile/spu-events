@@ -1,8 +1,9 @@
-import { EVENT_CATEGORIES, EVENT_STATUSES } from '@monthati/shared';
+import { EVENT_CATEGORIES, EVENT_STATUSES } from '@spu-events/shared';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
   check,
+  doublePrecision,
   index,
   integer,
   pgEnum,
@@ -32,6 +33,10 @@ export const events = pgTable(
     capacity: integer().notNull(),
     priceCents: integer().notNull().default(0),
     volunteersWanted: boolean().notNull().default(false),
+    /** Optional map pin (WGS84) and the address it came from. All three or none. */
+    latitude: doublePrecision(),
+    longitude: doublePrecision(),
+    address: text(),
     /** Storage key of the cover image, resolved to a URL by the storage service. */
     coverKey: text(),
     createdById: uuid().references(() => users.id, { onDelete: 'set null' }),
@@ -49,6 +54,10 @@ export const events = pgTable(
     check('events_ends_after_start', sql`${t.endsAt} > ${t.startsAt}`),
     check('events_capacity_positive', sql`${t.capacity} > 0`),
     check('events_price_non_negative', sql`${t.priceCents} >= 0`),
+    check(
+      'events_location_complete',
+      sql`(${t.latitude} is null) = (${t.longitude} is null) and (${t.latitude} is null) = (${t.address} is null)`,
+    ),
   ],
 );
 

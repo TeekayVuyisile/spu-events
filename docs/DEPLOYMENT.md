@@ -23,7 +23,7 @@ Why this shape:
 `render.yaml` is a Render Blueprint, so the whole service is defined in the repo.
 
 1. **Build:** `npm ci --include=dev && npm run build` builds the shared package, the API (tsup → `apps/api/dist`) and the web app (Vite → `apps/web/dist`).
-2. **Release:** `npm run release -w @monthati/api` (`src/release.ts`) applies pending migrations. If `DEMO_PASSWORD` is set and the database has no accounts yet, it also seeds demo data (`src/seed/demo.ts`). It is safe to run on every start.
+2. **Release:** `npm run release -w @spu-events/api` (`src/release.ts`) applies pending migrations. If `DEMO_PASSWORD` is set and the database has no accounts yet, it also seeds demo data (`src/seed/demo.ts`). It is safe to run on every start.
 3. **Start:** `node dist/server.js`. Render's health check calls `/api/health`, which also pings the database.
 
 ## Environment
@@ -31,7 +31,7 @@ Why this shape:
 | Variable | Set by | Notes |
 |---|---|---|
 | `DATABASE_URL` | you, in Render | Neon **direct** connection string (`…neon.tech/neondb?sslmode=require`). |
-| `DEMO_PASSWORD` | you, in Render | Password for the demo accounts. Remove it to stop seeding (seeding only ever runs on an empty database). |
+| `DEMO_PASSWORD` | you, in Render | Password for the demo accounts, at least 10 characters (the same rule as sign-up; the service won't start otherwise). Remove it to stop seeding (seeding only ever runs on an empty database). |
 | `SESSION_SECRET`, `TICKET_SIGNING_SECRET` | Render (`generateValue`) | Random 256-bit values. Changing the ticket secret invalidates every issued QR code. |
 | `NODE_ENV=production`, `STORAGE=database`, `WEB_DIST_DIR` | `render.yaml` | `production` turns on `Secure` cookies (Render terminates HTTPS and sets `X-Forwarded-Proto`; the app trusts one proxy hop). |
 | `WEB_ORIGIN` | automatic | Defaults to Render's `RENDER_EXTERNAL_URL`. Set it only when using a custom domain. |
@@ -40,13 +40,20 @@ Why this shape:
 
 | Role | Sign in with |
 |---|---|
-| Admin | `admin@monthati.demo` |
-| Gate staff | `gate@monthati.demo` |
-| Student | `202312345` or `student@monthati.demo` |
+| Admin | `admin@spuevents.demo` |
+| Gate staff | `gate@spuevents.demo` |
+| Student | `202312345` or `student@spuevents.demo` |
 
 All three use `DEMO_PASSWORD`. The seed also creates 15 more students (each with an unguessable password), 10 events with generated cover art (two past, one draft), a month of backdated sales and check-ins, comments, two volunteer applications and one reported comment. That gives every admin screen something to show.
 
-To try the same data locally, run `DEMO_PASSWORD=… npm run db:setup -w @monthati/api` against an empty database.
+To try the same data locally, run `DEMO_PASSWORD=… npm run db:setup -w @spu-events/api` against an empty database.
+
+## Map services
+
+Both are free, community-run services with fair-use policies. That's fine for a campus demo; a busy production site should move to a paid provider (MapTiler, Stadia, or a self-hosted Photon), which only means changing the tile URL in `location-map.tsx` and the base URL in `photonGeocoder`.
+
+- **Map tiles:** tile.openstreetmap.org, credited on every map as their policy requires. The tile requests carry the site's origin as Referer, which OSM also requires.
+- **Place search:** Photon (photon.komoot.io), called only by the API (`/api/admin/places`, admin-only, rate-limited, cached for a day), never by browsers.
 
 ## Free-tier behaviour
 

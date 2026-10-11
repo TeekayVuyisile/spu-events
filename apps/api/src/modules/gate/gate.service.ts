@@ -10,7 +10,7 @@ import {
   type ScanResult,
   type ScanResultKind,
   type StaffMember,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import type { Db } from '../../db/client';
 import { AppError } from '../../lib/errors';
 import type { LiveBus } from '../../lib/live-bus';
@@ -103,7 +103,7 @@ export function gateService({
 
       if (!ticket) {
         result = 'invalid';
-        message = 'Not a valid Monthati ticket';
+        message = 'Not a valid SPU Events ticket';
       } else if (now < opensAt || now > event.endsAt || event.status !== 'published') {
         result = 'not_open';
         message =

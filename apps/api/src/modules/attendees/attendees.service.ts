@@ -1,4 +1,4 @@
-import { CAMPUS_TZ, type AttendeeList } from '@monthati/shared';
+import { CAMPUS_TZ, type AttendeeList } from '@spu-events/shared';
 import type { Db } from '../../db/client';
 import { toCsv } from '../../lib/csv';
 import { AppError } from '../../lib/errors';

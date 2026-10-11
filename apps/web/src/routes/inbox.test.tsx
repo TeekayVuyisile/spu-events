@@ -1,4 +1,4 @@
-import type { Notification, NotificationPage } from '@monthati/shared';
+import type { Notification, NotificationPage } from '@spu-events/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';

@@ -1,4 +1,4 @@
-import type { ScanResult, ScanResultKind } from '@monthati/shared';
+import type { ScanResult, ScanResultKind } from '@spu-events/shared';
 import { CircleCheck, CircleX, Clock, TriangleAlert, type LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect } from 'react';

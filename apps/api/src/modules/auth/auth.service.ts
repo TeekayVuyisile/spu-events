@@ -1,4 +1,4 @@
-import { studentNumberSchema, type LoginInput, type SignupInput } from '@monthati/shared';
+import { studentNumberSchema, type LoginInput, type SignupInput } from '@spu-events/shared';
 import { uniqueViolation } from '../../lib/db-errors';
 import { AppError } from '../../lib/errors';
 import { hashPassword, verifyPassword } from '../../lib/password';

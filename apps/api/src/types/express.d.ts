@@ -1,4 +1,4 @@
-import type { SessionUser } from '@monthati/shared';
+import type { SessionUser } from '@spu-events/shared';
 import 'express-session';
 
 declare module 'express-session' {

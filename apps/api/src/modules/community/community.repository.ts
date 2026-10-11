@@ -1,4 +1,4 @@
-import type { ReportTarget, VolunteerStatus } from '@monthati/shared';
+import type { ReportTarget, VolunteerStatus } from '@spu-events/shared';
 import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { Executor } from '../../db/client';

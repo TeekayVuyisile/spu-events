@@ -9,7 +9,7 @@ import { buildApp, db, useTestDb } from './helpers';
 
 useTestDb();
 
-const dir = await mkdtemp(path.join(tmpdir(), 'monthati-uploads-'));
+const dir = await mkdtemp(path.join(tmpdir(), 'spu-events-uploads-'));
 afterAll(() => rm(dir, { recursive: true, force: true }));
 
 describe('local disk storage', () => {

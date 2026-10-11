@@ -1,4 +1,4 @@
-import type { Role } from '@monthati/shared';
+import type { Role } from '@spu-events/shared';
 import { GraduationCap, ScanLine, ShieldCheck, type LucideIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 

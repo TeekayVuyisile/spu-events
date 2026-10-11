@@ -1,4 +1,4 @@
-import type { EventCategory, EventInput } from '@monthati/shared';
+import type { EventCategory, EventInput, EventLocation } from '@spu-events/shared';
 import { sql } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Db } from '../db/client';
@@ -18,9 +18,9 @@ import { coverPng, mulberry32 } from './covers';
 
 /** The accounts people sign in with. Everyone else gets an unguessable password. */
 export const DEMO_ACCOUNTS = {
-  admin: 'admin@monthati.demo',
-  staff: 'gate@monthati.demo',
-  student: 'student@monthati.demo',
+  admin: 'admin@spuevents.demo',
+  staff: 'gate@spuevents.demo',
+  student: 'student@spuevents.demo',
   studentNumber: '202312345',
 } as const;
 
@@ -35,6 +35,30 @@ const COVER_COLOURS: Record<EventCategory, [string, string]> = {
   wellness: ['#047857', '#0ea5e9'],
   other: ['#475569', '#7c3aed'],
 };
+
+/** Campus sites as OpenStreetMap knows them; admins drag the pin onto the exact building. */
+const SITES = {
+  central: {
+    lat: -28.7477,
+    lng: 24.765,
+    address: 'Sol Plaatje University (Central Campus), Bultfontein Road, Kimberley',
+  },
+  lawn: {
+    lat: -28.7471,
+    lng: 24.7643,
+    address: 'Sol Plaatje University (Central Campus), Bultfontein Road, Kimberley',
+  },
+  north: {
+    lat: -28.7451,
+    lng: 24.7663,
+    address: 'Sol Plaatje University (North Campus), Sol Plaatje Drive, Kimberley',
+  },
+  south: {
+    lat: -28.7537,
+    lng: 24.7579,
+    address: 'Sol Plaatje University South Campus, Duvenhage Street, Kimberley',
+  },
+} satisfies Record<string, EventLocation>;
 
 interface DemoEvent extends Omit<EventInput, 'startsAt' | 'endsAt'> {
   /** Days from today, start hour in campus time, length in hours. */
@@ -52,6 +76,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Welcome Week Braai',
     category: 'party',
     venue: 'Residence Quad',
+    location: SITES.south,
     description: 'Start the semester with a braai, music and lawn games.\nBring your student card.',
     day: -9,
     hour: 17,
@@ -66,6 +91,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Mental Health Awareness Walk',
     category: 'wellness',
     venue: 'Main Gate',
+    location: SITES.central,
     description: 'A 5 km walk around campus with Student Wellness. Water and snacks at the end.',
     day: -16,
     hour: 8,
@@ -80,6 +106,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Campus Quiz Night',
     category: 'academic',
     venue: 'Student Centre',
+    location: SITES.north,
     description: 'Teams of four, six rounds, prizes for the top three teams.',
     day: 1,
     hour: 18,
@@ -93,6 +120,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Spring Formal',
     category: 'party',
     venue: 'Great Hall',
+    location: SITES.central,
     description: 'Black tie, live DJ and a photo booth.\nDoors open at 18:30.',
     day: 4,
     hour: 19,
@@ -106,6 +134,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Jazz on the Lawn',
     category: 'music',
     venue: 'Central Lawn',
+    location: SITES.lawn,
     description: 'Student bands from 16:00. Bring a blanket and a friend.',
     day: 6,
     hour: 16,
@@ -119,6 +148,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Inter-res Soccer Final',
     category: 'sport',
     venue: 'Sports Field',
+    location: SITES.south,
     description: 'The two top residences play for the cup. Wear your colours.',
     day: 9,
     hour: 14,
@@ -132,6 +162,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Careers Expo 2026',
     category: 'career',
     venue: 'Main Hall',
+    location: SITES.central,
     description: 'Over 40 employers and CV clinics all day. Bring printed CVs.',
     day: 12,
     hour: 9,
@@ -145,6 +176,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Poetry & Open Mic',
     category: 'arts',
     venue: 'Library Café',
+    location: SITES.north,
     description: 'Sign up on the night for a five-minute slot.',
     day: 17,
     hour: 18,
@@ -158,6 +190,7 @@ const EVENTS: DemoEvent[] = [
     title: 'Heritage Day Celebration',
     category: 'culture',
     venue: 'Amphitheatre',
+    location: SITES.central,
     description: 'Food stalls, traditional dress and performances from every society.',
     day: 24,
     hour: 11,
@@ -171,6 +204,7 @@ const EVENTS: DemoEvent[] = [
     title: 'End-of-Year Gala',
     category: 'party',
     venue: 'Great Hall',
+    location: null,
     description: 'Details to follow.',
     day: 40,
     hour: 19,
@@ -283,7 +317,7 @@ export async function seedDemo({
         firstName,
         lastName,
         email:
-          i === 0 ? DEMO_ACCOUNTS.student : `${firstName}.${lastName}@monthati.demo`.toLowerCase(),
+          i === 0 ? DEMO_ACCOUNTS.student : `${firstName}.${lastName}@spuevents.demo`.toLowerCase(),
         studentNumber: i === 0 ? DEMO_ACCOUNTS.studentNumber : `2023${String(10000 + i * 731)}`,
         passwordHash: i === 0 ? demoHash : otherHash,
       }),
@@ -302,16 +336,17 @@ export async function seedDemo({
     // Past events are created in the future, sold, then moved back in time below.
     const day = spec.day < 0 ? 2 : spec.day;
     const startsAt = at(day, spec.hour, now);
-    const { title, category, venue, description, capacity, priceCents, volunteersWanted } = spec;
+    const { title, category, venue, location, description, capacity, priceCents } = spec;
     const event = await events.create(
       {
         title,
         category,
         venue,
+        location,
         description,
         capacity,
         priceCents,
-        volunteersWanted,
+        volunteersWanted: spec.volunteersWanted,
         startsAt: startsAt.toISOString(),
         endsAt: new Date(startsAt.getTime() + spec.hours * 3_600_000).toISOString(),
       },

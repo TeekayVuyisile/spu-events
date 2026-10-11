@@ -1,4 +1,4 @@
-import { ADMIN_USER_PAGE_SIZE, type AdminUserListQuery, type UserStatus } from '@monthati/shared';
+import { ADMIN_USER_PAGE_SIZE, type AdminUserListQuery, type UserStatus } from '@spu-events/shared';
 import { and, desc, eq, ilike, or, sql, type SQL } from 'drizzle-orm';
 import type { Executor } from '../../db/client';
 import { events, tickets, users } from '../../db/schema';

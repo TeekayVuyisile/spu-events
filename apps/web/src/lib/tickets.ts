@@ -1,4 +1,4 @@
-import type { Ticket, TicketDetail, TicketScope } from '@monthati/shared';
+import type { Ticket, TicketDetail, TicketScope } from '@spu-events/shared';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { eventKeys } from '@/lib/events';
@@ -14,7 +14,7 @@ export const ticketKeys = {
 // A ticket that has been opened once stays viewable (QR included) without a
 // connection, which is exactly when students need it: in a queue with no signal.
 
-const OFFLINE_PREFIX = 'mth.ticket.';
+const OFFLINE_PREFIX = 'spu.ticket.';
 
 function readOffline(id: string): TicketDetail | undefined {
   try {

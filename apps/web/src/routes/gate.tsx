@@ -1,4 +1,4 @@
-import { formatEventWhen } from '@monthati/shared';
+import { formatEventWhen } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, DoorOpen, Loader2, ScanLine } from 'lucide-react';
 import { useState } from 'react';
@@ -19,7 +19,7 @@ export function GatePage() {
   return (
     <div className="dark flex min-h-dvh flex-col gap-6 bg-background p-4 text-foreground sm:p-6">
       <header className="flex items-center justify-between">
-        <span className="font-display text-lg font-extrabold">Monthati Gate</span>
+        <span className="font-display text-lg font-extrabold">SPU Events Gate</span>
         <span className="text-sm text-muted-foreground">{user?.firstName}</span>
       </header>
 

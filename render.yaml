@@ -3,7 +3,7 @@
 # the Render dashboard). See docs/DEPLOYMENT.md.
 services:
   - type: web
-    name: monthati
+    name: spu-events
     runtime: node
     plan: free
     region: ohio
@@ -11,7 +11,7 @@ services:
     # Dev dependencies (Vite, tsup) are needed to build, so include them despite NODE_ENV.
     buildCommand: npm ci --include=dev && npm run build
     # Migrate (and seed demo data into an empty database), then start.
-    startCommand: npm run release -w @monthati/api && npm start -w @monthati/api
+    startCommand: npm run release -w @spu-events/api && npm start -w @spu-events/api
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV

@@ -1,4 +1,4 @@
-import type { MeResponse } from '@monthati/shared';
+import type { MeResponse } from '@spu-events/shared';
 import type { RequestHandler } from 'express';
 import { startSession } from '../../lib/session';
 import type { InvitesService } from './invites.service';

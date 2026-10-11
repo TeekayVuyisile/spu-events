@@ -1,5 +1,5 @@
 {
-  "name": "monthati",
+  "name": "spu-events",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -10,17 +10,17 @@
     "node": ">=22.12"
   },
   "scripts": {
-    "dev": "concurrently -n api,web -c magenta,cyan \"npm run dev -w @monthati/api\" \"npm run dev -w @monthati/web\"",
-    "build": "npm run build -w @monthati/shared && npm run build -w @monthati/api && npm run build -w @monthati/web",
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm run dev -w @spu-events/api\" \"npm run dev -w @spu-events/web\"",
+    "build": "npm run build -w @spu-events/shared && npm run build -w @spu-events/api && npm run build -w @spu-events/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run test --workspaces --if-present",
-    "db:generate": "npm run db:generate -w @monthati/api --",
-    "db:migrate": "npm run db:migrate -w @monthati/api",
-    "db:studio": "npm run db:studio -w @monthati/api",
-    "user:create-admin": "npm run user:create-admin -w @monthati/api --"
+    "db:generate": "npm run db:generate -w @spu-events/api --",
+    "db:migrate": "npm run db:migrate -w @spu-events/api",
+    "db:studio": "npm run db:studio -w @spu-events/api",
+    "user:create-admin": "npm run user:create-admin -w @spu-events/api --"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

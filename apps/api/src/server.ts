@@ -4,6 +4,7 @@ import { createApp } from './app';
 import { loadEnv } from './config/env';
 import { createDb } from './db/client';
 import { createLogger } from './lib/logger';
+import { photonGeocoder } from './lib/geocoder';
 import { inProcessBus } from './lib/live-bus';
 import { simulatedPayments } from './lib/payments';
 import { storageFromEnv } from './lib/db-storage';
@@ -26,6 +27,7 @@ const app = createApp({
   payments: simulatedPayments(),
   // Single-instance fan-out; see lib/live-bus.ts before running more than one API process.
   bus: inProcessBus(),
+  geocoder: photonGeocoder({ userAgent: `spu-events/1.0 (${env.WEB_ORIGIN})` }),
   pingDb: async () => (await pool.query('select 1')).rowCount === 1,
   webDist: env.WEB_DIST_DIR,
 });

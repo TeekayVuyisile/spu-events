@@ -12,7 +12,7 @@ import {
   type ReactionKind,
   type ReactionSummary,
   type Role,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { randomBytes } from 'node:crypto';
 import type { Db } from '../../db/client';
 import type { CommentRow } from '../../db/schema';

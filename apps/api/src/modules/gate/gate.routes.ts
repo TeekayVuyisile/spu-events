@@ -1,4 +1,4 @@
-import { assignStaffSchema, scanInputSchema } from '@monthati/shared';
+import { assignStaffSchema, scanInputSchema } from '@spu-events/shared';
 import { Router } from 'express';
 import { z } from 'zod';
 import type { LiveBus } from '../../lib/live-bus';

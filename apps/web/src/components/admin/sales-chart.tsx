@@ -1,4 +1,4 @@
-import { formatCents, type Dashboard } from '@monthati/shared';
+import { formatCents, type Dashboard } from '@spu-events/shared';
 import {
   Area,
   AreaChart,

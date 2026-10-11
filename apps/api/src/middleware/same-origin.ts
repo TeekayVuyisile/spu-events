@@ -23,6 +23,8 @@ export function requireSameOrigin(allowedOrigin: string): RequestHandler {
     }
 
     if (origin === allowed) return next();
-    next(new AppError(403, 'BAD_ORIGIN', 'Request blocked: it did not come from the Monthati app'));
+    next(
+      new AppError(403, 'BAD_ORIGIN', 'Request blocked: it did not come from the SPU Events app'),
+    );
   };
 }

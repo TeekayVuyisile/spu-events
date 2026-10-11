@@ -17,7 +17,7 @@ export function BootScreen() {
   return (
     <div className="flex min-h-dvh items-center justify-center" aria-live="polite">
       <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
-      <span className="sr-only">Loading Monthati…</span>
+      <span className="sr-only">Loading SPU Events…</span>
     </div>
   );
 }

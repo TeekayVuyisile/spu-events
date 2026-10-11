@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PASSWORD_MIN, signupSchema, type SignupInput } from '@monthati/shared';
+import { PASSWORD_MIN, signupSchema, type SignupInput } from '@spu-events/shared';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';

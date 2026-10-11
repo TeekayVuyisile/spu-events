@@ -1,4 +1,4 @@
-import { CAMPUS_TZ } from '@monthati/shared';
+import { CAMPUS_TZ } from '@spu-events/shared';
 
 const dayMonth = new Intl.DateTimeFormat('en-ZA', {
   day: 'numeric',

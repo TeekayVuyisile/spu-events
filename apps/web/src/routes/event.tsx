@@ -1,10 +1,19 @@
-import { CATEGORY_LABELS, formatEventWhen, formatLongDate } from '@monthati/shared';
+import { CATEGORY_LABELS, formatEventWhen, formatLongDate } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, CalendarDays, CalendarX, HandHelping, MapPin } from 'lucide-react';
+import {
+  ArrowLeft,
+  CalendarDays,
+  CalendarX,
+  ExternalLink,
+  HandHelping,
+  MapPin,
+  Navigation,
+} from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { categoryIcons } from '@/components/events/category-icons';
 import { EventCover } from '@/components/events/event-cover';
 import { VolunteerCard } from '@/components/community/volunteer-card';
+import { MapView } from '@/components/maps/map-view';
 import { TicketBox } from '@/components/events/ticket-box';
 import { CommentsSection } from '@/components/social/comments';
 import { EventLikeButton } from '@/components/social/like-button';
@@ -14,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ApiRequestError } from '@/lib/api';
 import { eventQuery, hasEnded, isLive } from '@/lib/events';
+import { directionsUrl, googleMapsUrl } from '@/lib/maps';
 import { NotFoundPage } from '@/routes/not-found';
 
 export function EventPage() {
@@ -112,7 +122,9 @@ export function EventPage() {
               </dt>
               <dd>
                 <span className="block font-semibold">{event.venue}</span>
-                <span className="block text-sm text-muted-foreground">Sol Plaatje University</span>
+                <span className="block text-sm text-muted-foreground">
+                  {event.location?.address ?? 'Sol Plaatje University'}
+                </span>
               </dd>
             </div>
           </dl>
@@ -123,6 +135,39 @@ export function EventPage() {
               <p className="max-w-[70ch] leading-relaxed whitespace-pre-line text-muted-foreground">
                 {event.description}
               </p>
+            </section>
+          )}
+
+          {event.location && (
+            <section className="space-y-3" aria-labelledby="getting-there">
+              <h2 id="getting-there" className="text-xl font-bold">
+                Getting there
+              </h2>
+              <figure className="space-y-3">
+                <MapView
+                  lat={event.location.lat}
+                  lng={event.location.lng}
+                  label={event.venue}
+                  className="h-64 w-full border md:h-80"
+                />
+                <figcaption className="sr-only">
+                  Map showing {event.venue} at {event.location.address}
+                </figcaption>
+              </figure>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild variant="outline">
+                  <a href={googleMapsUrl(event.location)} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink aria-hidden /> Open in Google Maps
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </a>
+                </Button>
+                <Button asChild variant="outline">
+                  <a href={directionsUrl(event.location)} target="_blank" rel="noopener noreferrer">
+                    <Navigation aria-hidden /> Directions
+                    <span className="sr-only"> (opens Google Maps in a new tab)</span>
+                  </a>
+                </Button>
+              </div>
             </section>
           )}
 

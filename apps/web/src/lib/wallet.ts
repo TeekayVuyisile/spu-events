@@ -1,4 +1,4 @@
-import type { TopUpInput, Wallet, WithdrawInput } from '@monthati/shared';
+import type { TopUpInput, Wallet, WithdrawInput } from '@spu-events/shared';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 

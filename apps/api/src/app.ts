@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
 import type { Env } from './config/env';
 import type { Db } from './db/client';
+import type { Geocoder } from './lib/geocoder';
 import type { LiveBus } from './lib/live-bus';
 import type { Logger } from './lib/logger';
 import type { PaymentProvider } from './lib/payments';
@@ -35,6 +36,7 @@ import { adminCommunityRoutes, communityRoutes } from './modules/community/commu
 import { communityService } from './modules/community/community.service';
 import { notificationsRoutes } from './modules/notifications/notifications.routes';
 import { notificationsService } from './modules/notifications/notifications.service';
+import { placesRoutes } from './modules/places/places.routes';
 import { socialRoutes } from './modules/social/social.routes';
 import { socialService } from './modules/social/social.service';
 import { purchaseRoute, ticketsRoutes } from './modules/tickets/tickets.routes';
@@ -52,6 +54,7 @@ export interface AppDeps {
   storage: StorageService;
   payments: PaymentProvider;
   bus: LiveBus;
+  geocoder: Geocoder;
   /** Built web app to serve on the same origin (production). */
   webDist?: string;
 }
@@ -66,6 +69,7 @@ export function createApp({
   storage,
   payments,
   bus,
+  geocoder,
   webDist,
 }: AppDeps) {
   const app = express();
@@ -76,8 +80,10 @@ export function createApp({
   app.set('trust proxy', 1);
   app.use(
     helmet({
-      // Image previews before upload are blob: URLs; QR codes are data: URLs.
-      contentSecurityPolicy: { directives: { 'img-src': ["'self'", 'data:', 'blob:'] } },
+      // Upload previews are blob: URLs, QR codes data: URLs, and map tiles come from OpenStreetMap.
+      contentSecurityPolicy: {
+        directives: { 'img-src': ["'self'", 'data:', 'blob:', 'https://tile.openstreetmap.org'] },
+      },
     }),
   );
   app.use(cors({ origin: env.WEB_ORIGIN, credentials: true }));
@@ -133,6 +139,7 @@ export function createApp({
   app.use('/api/notifications', notificationsRoutes(notificationsService({ db })));
   app.use('/api/admin/dashboard', dashboardRoutes(dashboardService({ db })));
   app.use('/api/admin/users', adminUsersRoutes(adminUsersService({ db })));
+  app.use('/api/admin/places', placesRoutes(geocoder, { limitsEnabled: env.NODE_ENV !== 'test' }));
 
   // Last: these routers guard everything under /api/admin that reaches them.
   app.use('/api/admin', adminGateRoutes(gate, bus));

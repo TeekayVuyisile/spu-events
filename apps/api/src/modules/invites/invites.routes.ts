@@ -1,4 +1,4 @@
-import { acceptInviteSchema, createInviteSchema } from '@monthati/shared';
+import { acceptInviteSchema, createInviteSchema } from '@spu-events/shared';
 import { Router, type RequestHandler } from 'express';
 import { z } from 'zod';
 import { requireRole } from '../../middleware/auth';

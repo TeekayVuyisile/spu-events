@@ -34,7 +34,7 @@ async function insertEvent(values: Partial<typeof events.$inferInsert> = {}) {
 async function holderOf(eventId: string, app = buildApp()) {
   const s = await signedIn('student', app);
   await db.insert(tickets).values({
-    code: `MTH-${s.user.id.slice(0, 4).toUpperCase()}-PHTO`,
+    code: `SPU-${s.user.id.slice(0, 4).toUpperCase()}-PHTO`,
     eventId,
     userId: s.user.id,
     pricePaidCents: 0,

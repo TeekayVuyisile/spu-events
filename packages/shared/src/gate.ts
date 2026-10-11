@@ -22,7 +22,7 @@ export const scanInputSchema = z
       .string()
       .trim()
       .toUpperCase()
-      .regex(/^MTH-[A-Z0-9]{4}-[A-Z0-9]{4}$/, 'Codes look like MTH-7Q4K-29XD')
+      .regex(/^SPU-[A-Z0-9]{4}-[A-Z0-9]{4}$/, 'Codes look like SPU-7Q4K-29XD')
       .optional(),
     /** Free-text gate name shown on "already used" results, e.g. "Gate B". */
     gate: z.string().trim().max(40).optional(),

@@ -1,4 +1,4 @@
-import type { Ticket } from '@monthati/shared';
+import type { Ticket } from '@spu-events/shared';
 import { Ban, CircleCheck, ScanLine } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 

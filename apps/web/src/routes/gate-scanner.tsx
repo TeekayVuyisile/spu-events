@@ -1,4 +1,4 @@
-import type { ScanInput, ScanResult } from '@monthati/shared';
+import type { ScanInput, ScanResult } from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Keyboard, Loader2 } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
@@ -163,12 +163,12 @@ function ManualEntry({
   onSubmit: (code: string) => void;
 }) {
   const [value, setValue] = useState('');
-  const code = `MTH-${value
+  const code = `SPU-${value
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, '')
     .slice(0, 8)
     .replace(/^(.{4})(.)/, '$1-$2')}`;
-  const complete = /^MTH-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code);
+  const complete = /^SPU-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code);
 
   return (
     <Dialog
@@ -197,7 +197,7 @@ function ManualEntry({
           className="space-y-4"
         >
           <div className="flex items-center gap-2">
-            <span className="tabular text-xl font-semibold text-muted-foreground">MTH-</span>
+            <span className="tabular text-xl font-semibold text-muted-foreground">SPU-</span>
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}

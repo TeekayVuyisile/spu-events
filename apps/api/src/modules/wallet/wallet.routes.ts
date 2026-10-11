@@ -1,4 +1,4 @@
-import { topUpSchema, withdrawSchema } from '@monthati/shared';
+import { topUpSchema, withdrawSchema } from '@spu-events/shared';
 import { Router } from 'express';
 import { requireRole } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';

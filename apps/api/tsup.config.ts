@@ -6,7 +6,7 @@ export default defineConfig({
   platform: 'node',
   target: 'node22',
   // Workspace packages ship as TS source, so bundle them; npm deps stay external.
-  noExternal: [/^@monthati\//],
+  noExternal: [/^@spu-events\//],
   sourcemap: true,
   clean: true,
 });

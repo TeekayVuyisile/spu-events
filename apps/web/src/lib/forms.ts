@@ -11,7 +11,7 @@ export function applyServerError<T extends FieldValues>(
 ) {
   if (!(err instanceof ApiRequestError)) {
     form.setError('root.server', {
-      message: 'Couldn’t reach Monthati. Check your connection and try again.',
+      message: 'Couldn’t reach SPU Events. Check your connection and try again.',
     });
     return;
   }

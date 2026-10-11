@@ -1,4 +1,4 @@
-import type { AdminUserDetail, Dashboard } from '@monthati/shared';
+import type { AdminUserDetail, Dashboard } from '@spu-events/shared';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';

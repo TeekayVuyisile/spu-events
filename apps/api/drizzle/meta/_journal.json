@@ -64,6 +64,13 @@
       "when": 1791736078162,
       "tag": "0008_uploads",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791740382775,
+      "tag": "0009_event_location",
+      "breakpoints": true
     }
   ]
 }

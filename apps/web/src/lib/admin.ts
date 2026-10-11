@@ -8,7 +8,7 @@ import type {
   ReinstateUserInput,
   SuspendUserInput,
   WalletAdjustmentInput,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { keepPreviousData, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 

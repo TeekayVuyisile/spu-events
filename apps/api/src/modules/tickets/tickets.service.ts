@@ -5,7 +5,7 @@ import {
   type Ticket,
   type TicketDetail,
   type TicketScope,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import type { Db, Executor } from '../../db/client';
 import type { TicketRow } from '../../db/schema';
 import { uniqueViolation } from '../../lib/db-errors';

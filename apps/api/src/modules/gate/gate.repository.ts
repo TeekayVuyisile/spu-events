@@ -1,4 +1,4 @@
-import type { ScanResultKind } from '@monthati/shared';
+import type { ScanResultKind } from '@spu-events/shared';
 import { and, asc, desc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { Executor } from '../../db/client';

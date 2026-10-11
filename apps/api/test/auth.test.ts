@@ -21,7 +21,7 @@ describe('POST /api/auth/signup', () => {
     expect(res.status).toBe(201);
     expect(res.body.user).toMatchObject({ role: 'student', email: 'lerato@spu.ac.za' });
     expect(res.body.user).not.toHaveProperty('passwordHash');
-    expect(res.headers['set-cookie']?.[0]).toMatch(/^mth\.sid=.*HttpOnly.*SameSite=Lax/i);
+    expect(res.headers['set-cookie']?.[0]).toMatch(/^spu\.sid=.*HttpOnly.*SameSite=Lax/i);
 
     const me = await agent.get('/api/auth/me');
     expect(me.body.user.id).toBe(res.body.user.id);
@@ -113,7 +113,7 @@ describe('POST /api/auth/login', () => {
       const res = await agent
         .post('/api/auth/login')
         .send({ identifier: user.email, password: PASSWORD });
-      return /mth\.sid=([^;]+)/.exec(res.headers['set-cookie']?.[0] ?? '')?.[1];
+      return /spu\.sid=([^;]+)/.exec(res.headers['set-cookie']?.[0] ?? '')?.[1];
     };
     const first = await sid();
     const second = await sid();

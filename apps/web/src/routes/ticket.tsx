@@ -6,7 +6,7 @@ import {
   formatTime,
   formatDay,
   type TicketDetail,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, CloudOff, Maximize2, PartyPopper, X } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';

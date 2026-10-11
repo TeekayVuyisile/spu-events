@@ -59,10 +59,13 @@ export function AdminShell() {
         <div className="flex h-16 items-center justify-between px-4">
           <Link
             to="/admin"
-            className="flex items-center gap-2.5 font-display text-lg font-extrabold"
+            className="flex items-center gap-2.5 font-display text-lg font-extrabold whitespace-nowrap"
           >
-            <span aria-hidden className="size-7 rounded-lg bg-gradient-to-br from-primary to-cta" />
-            Monthati{' '}
+            <span
+              aria-hidden
+              className="size-7 shrink-0 rounded-lg bg-gradient-to-br from-primary to-cta"
+            />
+            SPU Events{' '}
             <span className="font-sans text-xs font-semibold text-muted-foreground">Admin</span>
           </Link>
           <div className="flex items-center gap-1">

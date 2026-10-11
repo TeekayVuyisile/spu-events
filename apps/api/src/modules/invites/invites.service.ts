@@ -5,7 +5,7 @@ import type {
   Invite,
   InvitePreview,
   InviteStatus,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import type { Db } from '../../db/client';
 import type { InviteRow } from '../../db/schema';
 import { uniqueViolation } from '../../lib/db-errors';

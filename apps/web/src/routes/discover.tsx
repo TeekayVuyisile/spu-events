@@ -4,7 +4,7 @@ import {
   eventListQuerySchema,
   type EventCategory,
   type WhenFilter,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Search, SearchX } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';

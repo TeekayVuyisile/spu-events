@@ -73,7 +73,7 @@ export function AppShell() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <NavLink to="/" className="flex items-center gap-2.5 font-display text-xl font-extrabold">
             <span aria-hidden className="size-7 rounded-lg bg-gradient-to-br from-primary to-cta" />
-            Monthati
+            SPU Events
           </NavLink>
 
           <nav aria-label="Main" className="hidden items-center gap-1 md:flex">

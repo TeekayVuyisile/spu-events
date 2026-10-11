@@ -1,4 +1,4 @@
-import { dateBlock, formatTime, type EventSummary } from '@monthati/shared';
+import { dateBlock, formatTime, type EventSummary } from '@spu-events/shared';
 import { Heart, MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router';

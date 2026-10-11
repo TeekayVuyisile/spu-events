@@ -6,7 +6,7 @@ import type {
   ScanLogEntry,
   ScanResult,
   StaffMember,
-} from '@monthati/shared';
+} from '@spu-events/shared';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
@@ -114,7 +114,7 @@ export function useAssignStaff(eventId: string) {
 
 // ── This device's gate name ("Gate B"), remembered between shifts ──
 
-const GATE_NAME_KEY = 'mth.gate.name';
+const GATE_NAME_KEY = 'spu.gate.name';
 
 export function readGateName() {
   try {
