@@ -8,9 +8,10 @@ import {
   type Photo,
 } from '@monthati/shared';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { Camera, Heart, Images, Lock, Trash2 } from 'lucide-react';
+import { Camera, Flag, Heart, Images, Lock, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { ReportDialog } from '@/components/community/report-dialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Field } from '@/components/ui/field';
@@ -132,7 +133,13 @@ function PhotoDialog({
   const { user } = useSession();
   const { like, remove } = usePhotoMutations(eventId);
   const [confirm, setConfirm] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const canDelete = user && (user.id === photo.author.id || user.role === 'admin');
+
+  // Swap to the report form instead of stacking two dialogs.
+  if (reporting) {
+    return <ReportDialog targetType="photo" targetId={photo.id} onClose={onClose} />;
+  }
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
@@ -183,6 +190,15 @@ function PhotoDialog({
               }}
             >
               <Trash2 aria-hidden /> {confirm ? 'Tap again to remove' : 'Remove'}
+            </Button>
+          )}
+          {user && user.id !== photo.author.id && (
+            <Button
+              variant="ghost"
+              className="text-muted-foreground"
+              onClick={() => setReporting(true)}
+            >
+              <Flag aria-hidden /> Report
             </Button>
           )}
         </div>

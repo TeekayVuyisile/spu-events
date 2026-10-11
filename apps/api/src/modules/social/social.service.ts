@@ -21,7 +21,8 @@ import { detectImage } from '../../lib/image';
 import type { StorageService } from '../../lib/storage';
 import { eventsRepository } from '../events/events.repository';
 import { usersRepository } from '../users/users.repository';
-import { decodeCursor, encodeCursor, socialRepository } from './social.repository';
+import { decodeCursor, encodeCursor } from '../../lib/cursor';
+import { socialRepository } from './social.repository';
 
 export interface Actor {
   id: string;

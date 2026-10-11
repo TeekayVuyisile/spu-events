@@ -24,6 +24,10 @@ import { gateService } from './modules/gate/gate.service';
 import { healthRoutes } from './modules/health/health.routes';
 import { adminInvitesRoutes, publicInvitesRoutes } from './modules/invites/invites.routes';
 import { invitesService } from './modules/invites/invites.service';
+import { adminCommunityRoutes, communityRoutes } from './modules/community/community.routes';
+import { communityService } from './modules/community/community.service';
+import { notificationsRoutes } from './modules/notifications/notifications.routes';
+import { notificationsService } from './modules/notifications/notifications.service';
 import { socialRoutes } from './modules/social/social.routes';
 import { socialService } from './modules/social/social.service';
 import { purchaseRoute, ticketsRoutes } from './modules/tickets/tickets.routes';
@@ -107,8 +111,13 @@ export function createApp({
     '/api',
     socialRoutes(socialService({ db, storage }), { limitsEnabled: env.NODE_ENV !== 'test' }),
   );
-  // Last among /api/admin routers: it guards everything under /api/admin it sees.
+  const community = communityService({ db, storage });
+  app.use('/api', communityRoutes(community, { limitsEnabled: env.NODE_ENV !== 'test' }));
+  app.use('/api/notifications', notificationsRoutes(notificationsService({ db })));
+
+  // Last: these routers guard everything under /api/admin that reaches them.
   app.use('/api/admin', adminGateRoutes(gate, bus));
+  app.use('/api/admin', adminCommunityRoutes(community));
 
   app.use(notFound);
   app.use(errorHandler);

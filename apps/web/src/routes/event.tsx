@@ -4,6 +4,7 @@ import { ArrowLeft, CalendarDays, CalendarX, HandHelping, MapPin } from 'lucide-
 import { Link, useParams } from 'react-router';
 import { categoryIcons } from '@/components/events/category-icons';
 import { EventCover } from '@/components/events/event-cover';
+import { VolunteerCard } from '@/components/community/volunteer-card';
 import { TicketBox } from '@/components/events/ticket-box';
 import { CommentsSection } from '@/components/social/comments';
 import { EventLikeButton } from '@/components/social/like-button';
@@ -121,6 +122,7 @@ export function EventPage() {
             </section>
           )}
 
+          <VolunteerCard event={event} />
           <PhotoWall event={event} />
           <CommentsSection event={event} />
         </div>

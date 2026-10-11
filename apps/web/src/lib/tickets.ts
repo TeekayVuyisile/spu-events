@@ -75,6 +75,8 @@ function useInvalidateAfterTicketChange() {
     void queryClient.invalidateQueries({ queryKey: ticketKeys.all });
     void queryClient.invalidateQueries({ queryKey: walletKey });
     void queryClient.invalidateQueries({ queryKey: eventKeys.all });
+    // A ticket change always comes with a notification.
+    void queryClient.invalidateQueries({ queryKey: ['notifications'] });
   };
 }
 

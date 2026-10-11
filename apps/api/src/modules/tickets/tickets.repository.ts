@@ -72,6 +72,15 @@ export function ticketsRepository(db: Executor) {
       return row;
     },
 
+    /** Holders of valid tickets, for announcing changes to an event. */
+    async validHolderIds(eventId: string) {
+      const rows = await db
+        .selectDistinct({ userId: tickets.userId })
+        .from(tickets)
+        .where(and(eq(tickets.eventId, eventId), eq(tickets.status, 'valid')));
+      return rows.map((r) => r.userId);
+    },
+
     /** Cancels every valid ticket for an event and returns them (for refunds). */
     async cancelAllForEvent(eventId: string) {
       return db

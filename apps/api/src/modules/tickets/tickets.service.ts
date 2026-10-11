@@ -1,4 +1,11 @@
-import { cancelDeadline, type Ticket, type TicketDetail, type TicketScope } from '@monthati/shared';
+import {
+  cancelDeadline,
+  formatCents,
+  formatEventWhen,
+  type Ticket,
+  type TicketDetail,
+  type TicketScope,
+} from '@monthati/shared';
 import type { Db, Executor } from '../../db/client';
 import type { TicketRow } from '../../db/schema';
 import { uniqueViolation } from '../../lib/db-errors';
@@ -7,6 +14,7 @@ import type { StorageService } from '../../lib/storage';
 import { generateTicketCode, type TicketSigner } from '../../lib/ticket-signing';
 import { eventsRepository } from '../events/events.repository';
 import { eventMappers, type EventWithSold } from '../events/events.mappers';
+import { notify } from '../notifications/notifications.repository';
 import { insufficientFunds } from '../wallet/wallet.service';
 import { walletRepository } from '../wallet/wallet.repository';
 import { ticketsRepository } from './tickets.repository';
@@ -130,6 +138,15 @@ export function ticketsService({
             ticketId: row.id,
           });
         }
+        await notify(tx, [
+          {
+            userId,
+            kind: 'ticket_issued',
+            title: `You’re going to ${event.title}`,
+            body: `${formatEventWhen(event.startsAt.toISOString(), event.endsAt.toISOString())} · ${event.venue}. Your QR code is ready.`,
+            link: `/tickets/${row.id}`,
+          },
+        ]);
         return row;
       });
 
@@ -169,6 +186,18 @@ export function ticketsService({
         const cancelled = await ticketsRepository(tx).cancel(id, 'by_holder');
         if (!cancelled) throw AppError.conflict('This ticket can’t be cancelled any more');
         await refundTickets(tx, [cancelled]);
+        await notify(tx, [
+          {
+            userId,
+            kind: 'ticket_refunded',
+            title: `Ticket cancelled: ${event!.title}`,
+            body:
+              cancelled.pricePaidCents > 0
+                ? `${formatCents(cancelled.pricePaidCents)} was refunded to your wallet.`
+                : 'Your spot was released for someone else.',
+            link: cancelled.pricePaidCents > 0 ? '/wallet' : `/events/${event!.slug}`,
+          },
+        ]);
       });
 
       return getMine(userId, id);

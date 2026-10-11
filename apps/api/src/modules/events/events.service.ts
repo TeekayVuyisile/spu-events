@@ -1,10 +1,18 @@
-import type { AdminEventListQuery, EventInput, EventListQuery, EventPage } from '@monthati/shared';
+import {
+  formatCents,
+  formatEventWhen,
+  type AdminEventListQuery,
+  type EventInput,
+  type EventListQuery,
+  type EventPage,
+} from '@monthati/shared';
 import { randomBytes } from 'node:crypto';
 import type { Db } from '../../db/client';
 import { uniqueViolation } from '../../lib/db-errors';
 import { AppError } from '../../lib/errors';
 import { detectImage } from '../../lib/image';
 import type { StorageService } from '../../lib/storage';
+import { notify } from '../notifications/notifications.repository';
 import { refundTickets } from '../tickets/tickets.service';
 import { socialRepository } from '../social/social.repository';
 import { ticketsRepository } from '../tickets/tickets.repository';
@@ -128,7 +136,30 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
       }
       if (Object.keys(fields).length) throw AppError.conflict('Some fields need attention', fields);
 
-      await repo.update(id, { ...input, startsAt, endsAt: new Date(input.endsAt) });
+      const endsAt = new Date(input.endsAt);
+      const moved =
+        current.status === 'published' &&
+        (startsAt.getTime() !== current.startsAt.getTime() ||
+          endsAt.getTime() !== current.endsAt.getTime() ||
+          input.venue !== current.venue);
+
+      await db.transaction(async (tx) => {
+        await eventsRepository(tx).update(id, { ...input, startsAt, endsAt });
+        // Ticket holders need to know if when or where changed; other edits stay quiet.
+        if (moved) {
+          const holders = await ticketsRepository(tx).validHolderIds(id);
+          await notify(
+            tx,
+            holders.map((userId) => ({
+              userId,
+              kind: 'event_changed' as const,
+              title: `${input.title} has changed`,
+              body: `Now ${formatEventWhen(startsAt.toISOString(), endsAt.toISOString())} at ${input.venue}. Your ticket is still valid.`,
+              link: `/events/${current.slug}`,
+            })),
+          );
+        }
+      });
       return reload(id);
     },
 
@@ -180,6 +211,16 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
         if (!done) throw AppError.conflict(`Can’t cancel an event that is ${event.status}`);
         const cancelled = await ticketsRepository(tx).cancelAllForEvent(id);
         await refundTickets(tx, cancelled);
+        await notify(
+          tx,
+          cancelled.map((t) => ({
+            userId: t.userId,
+            kind: 'event_cancelled' as const,
+            title: `${event.title} is cancelled`,
+            body: `${reason}${t.pricePaidCents > 0 ? ` ${formatCents(t.pricePaidCents)} has been refunded to your wallet.` : ''}`,
+            link: t.pricePaidCents > 0 ? '/wallet' : `/events/${event.slug}`,
+          })),
+        );
       });
       return reload(id);
     },

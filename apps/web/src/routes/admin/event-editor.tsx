@@ -33,6 +33,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { EventCover } from '@/components/events/event-cover';
 import { GateStaffCard } from '@/components/events/gate-staff-card';
+import { VolunteersCard } from '@/components/events/volunteers-card';
 import { EventStatusBadge } from '@/components/events/event-status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -371,6 +372,7 @@ function Editor({ event }: { event?: AdminEvent }) {
           />
           {event && <StatusCard event={event} dirty={isDirty} onSaved={saved} />}
           {event && event.status !== 'cancelled' && <GateStaffCard eventId={event.id} />}
+          {event?.volunteersWanted && <VolunteersCard eventId={event.id} />}
         </div>
       </div>
     </div>

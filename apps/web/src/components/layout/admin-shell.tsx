@@ -1,17 +1,32 @@
-import { CalendarDays, ExternalLink, LayoutDashboard, Users } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { CalendarDays, ExternalLink, Flag, LayoutDashboard, Users } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
 import { SignOutButton } from '@/components/account/sign-out-button';
 import { AnimatedOutlet } from '@/components/motion/animated-outlet';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { Avatar } from '@/components/ui/avatar';
 import { useSession } from '@/lib/auth';
+import { moderationCountQuery } from '@/lib/community';
 import { cn } from '@/lib/utils';
 
 const nav = [
   { to: '/admin', label: 'Overview', icon: LayoutDashboard },
   { to: '/admin/events', label: 'Events', icon: CalendarDays },
+  { to: '/admin/moderation', label: 'Moderation', icon: Flag },
   { to: '/admin/staff', label: 'Staff & invites', icon: Users },
 ] as const;
+
+/** Open moderation items, so a backlog is visible from anywhere in admin. */
+function ModerationBadge() {
+  const { data: count = 0 } = useQuery(moderationCountQuery);
+  if (!count) return null;
+  return (
+    <span className="tabular ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-warning px-1.5 text-xs font-bold text-[#1a1000]">
+      {count}
+      <span className="sr-only"> to review</span>
+    </span>
+  );
+}
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   cn(
@@ -65,6 +80,7 @@ export function AdminShell() {
             <NavLink key={to} to={to} end={to === '/admin'} className={linkClass}>
               <Icon className="size-5" strokeWidth={1.75} aria-hidden />
               {label}
+              {to === '/admin/moderation' && <ModerationBadge />}
             </NavLink>
           ))}
           <Link to="/" className={linkClass({ isActive: false })}>

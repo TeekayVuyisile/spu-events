@@ -4,7 +4,9 @@ import { AnimatedOutlet } from '@/components/motion/animated-outlet';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
 import { useSession } from '@/lib/auth';
+import { unreadCountQuery } from '@/lib/community';
 import { cn } from '@/lib/utils';
 
 const nav = [
@@ -14,6 +16,24 @@ const nav = [
   { to: '/inbox', label: 'Inbox', icon: Inbox },
   { to: '/me', label: 'Me', icon: UserRound },
 ] as const;
+
+/** Unread notification count; hidden when signed out or nothing is unread. */
+function UnreadBadge({ className }: { className?: string }) {
+  const { user } = useSession();
+  const { data: count = 0 } = useQuery({ ...unreadCountQuery, enabled: Boolean(user) });
+  if (!user || count === 0) return null;
+  return (
+    <span
+      className={cn(
+        'tabular inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-cta px-1 text-[0.65rem] leading-none font-bold text-cta-foreground',
+        className,
+      )}
+    >
+      {count > 99 ? '99+' : count}
+      <span className="sr-only"> unread</span>
+    </span>
+  );
+}
 
 /** Avatar link to the profile when signed in, a Log in button when not. */
 function AccountButton() {
@@ -69,7 +89,10 @@ export function AppShell() {
                   )
                 }
               >
-                {label}
+                <span className="inline-flex items-center gap-1.5">
+                  {label}
+                  {to === '/inbox' && <UnreadBadge />}
+                </span>
               </NavLink>
             ))}
           </nav>
@@ -102,7 +125,10 @@ export function AppShell() {
                   )
                 }
               >
-                <Icon className="size-6" strokeWidth={1.75} aria-hidden />
+                <span className="relative">
+                  <Icon className="size-6" strokeWidth={1.75} aria-hidden />
+                  {to === '/inbox' && <UnreadBadge className="absolute -top-1.5 -right-2.5" />}
+                </span>
                 {label}
               </NavLink>
             </li>

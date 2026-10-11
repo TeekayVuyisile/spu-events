@@ -4,3 +4,4 @@ export * from './events';
 export * from './tickets';
 export * from './gate';
 export * from './social';
+export * from './community';

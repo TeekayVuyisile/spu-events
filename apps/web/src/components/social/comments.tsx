@@ -7,6 +7,7 @@ import {
 } from '@monthati/shared';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import {
+  Flag,
   Flame,
   Heart,
   Laugh,
@@ -23,6 +24,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
+import { ReportDialog } from '@/components/community/report-dialog';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/form-alert';
@@ -225,6 +227,7 @@ function CommentItem({
   const [mode, setMode] = useState<'view' | 'edit' | 'reply'>('view');
   const [picking, setPicking] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const mine = Boolean(user && comment.author?.id === user.id);
   const canDelete = mine || user?.role === 'admin';
 
@@ -370,7 +373,18 @@ function CommentItem({
                 }}
               />
             )}
+            {user && !mine && (
+              <ActionButton icon={Flag} label="Report" onClick={() => setReporting(true)} />
+            )}
           </div>
+        )}
+
+        {reporting && (
+          <ReportDialog
+            targetType="comment"
+            targetId={comment.id}
+            onClose={() => setReporting(false)}
+          />
         )}
 
         {mode === 'reply' && (

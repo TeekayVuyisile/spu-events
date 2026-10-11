@@ -9,6 +9,7 @@ import { MePage } from '@/routes/me';
 import { NotFoundPage } from '@/routes/not-found';
 import { PlaceholderPage } from '@/routes/placeholder';
 import { BootScreen, RootLayout, RouteError } from '@/routes/route-states';
+import { InboxPage } from '@/routes/inbox';
 import { TicketPage } from '@/routes/ticket';
 import { TicketsPage } from '@/routes/tickets';
 import { WalletPage } from '@/routes/wallet';
@@ -44,7 +45,7 @@ export const router = createBrowserRouter([
           {
             loader: requireUser(),
             children: [
-              { path: 'inbox', element: <PlaceholderPage title="Inbox" phase={6} /> },
+              { path: 'inbox', element: <InboxPage /> },
               { path: 'me', element: <MePage /> },
             ],
           },
@@ -88,6 +89,10 @@ export const router = createBrowserRouter([
             lazy: page(() => import('@/routes/admin/live-checkins'), 'LiveCheckinsPage'),
           },
           { path: 'staff', lazy: page(() => import('@/routes/admin/staff'), 'StaffPage') },
+          {
+            path: 'moderation',
+            lazy: page(() => import('@/routes/admin/moderation'), 'ModerationPage'),
+          },
         ],
       },
       {
