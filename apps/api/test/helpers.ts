@@ -21,7 +21,7 @@ export const { db, pool } = createDb(testDatabaseUrl());
 export function useTestDb() {
   beforeEach(async () => {
     await pool.query(
-      'truncate users, invites, sessions, events, tickets, wallet_ledger, event_staff, scan_logs, event_likes, comments, comment_reactions, photos, photo_likes, volunteer_applications, reports, notifications, audit_log restart identity cascade',
+      'truncate users, invites, sessions, events, tickets, wallet_ledger, event_staff, scan_logs, event_likes, comments, comment_reactions, photos, photo_likes, volunteer_applications, reports, notifications, audit_log, uploads restart identity cascade',
     );
   });
   afterAll(() => pool.end());

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate), 5 (social), 6 (volunteers, moderation, notifications) and 7 (admin dashboard, users, accessibility) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
+A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate), 5 (social), 6 (volunteers, moderation, notifications) and 7 (admin dashboard, users, accessibility) are done. Phase 8 (ship: demo seed, Render + Neon deployment, README) is in progress; see `docs/DEPLOYMENT.md`. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
 
 ## Commands (run from repo root)
 
@@ -14,6 +14,7 @@ A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` 
 - `npm run lint` · `npm run typecheck` · `npm run format` · `npm run build`. CI (`.github/workflows/ci.yml`) runs format:check, lint, typecheck, test and build.
 - Database: change `apps/api/src/db/schema/*`, run `npm run db:generate -- --name <change>`, then run `npm run db:migrate`. Never hand-edit an applied migration in `apps/api/drizzle/`.
 - First admin: `npm run user:create-admin -- --email <email> --first-name <name> --last-name <name>` (prompts for the password, or reads `ADMIN_PASSWORD`). Every other staff or admin account comes from an invite.
+- Demo data: `DEMO_PASSWORD=… npm run db:setup -w @monthati/api` migrates, then seeds an **empty** database (`src/seed/demo.ts`). In production, `npm run release -w @monthati/api` (`src/release.ts`) does the same before every start.
 - Config: `apps/api/.env` (copy `.env.example`; URL-encode special characters in the password). The legacy app reads `legacy/.env`.
 
 ## Architecture
@@ -37,6 +38,8 @@ npm workspaces:
   - Social: public content shows authors as "First L." (`publicAuthor`), never full names or emails. Paginated feeds use keyset cursors built from Postgres's own `created_at::text` (microseconds), never a JS Date. Event reads use `eventColumns` from `events.repository.ts` so every live counter (tickets sold, likes) comes along. Posting is rate-limited per user (`userRateLimit`).
   - Notifications: call `notify(tx, rows)` (`notifications.repository.ts`) inside the same transaction as the change it announces, never after it. Moderation resolves every open report on an item at once (`communityService.act`).
   - Admin account actions (suspend, reinstate, wallet adjustments) call `audit(tx, row)` (`audit.repository.ts`) in the same transaction, always with a reason. Reporting queries live in `dashboard.repository.ts` as SQL; revenue comes from the ledger (purchases minus refunds), never from ticket prices, and days are bucketed in campus time.
+  - Production (`docs/DEPLOYMENT.md`, `render.yaml`): one Render service, where the API also serves `apps/web/dist` (`WEB_DIST_DIR`, `lib/web-app.ts`) so the site stays same-origin, plus Neon Postgres. Uploads use `STORAGE=database` (`lib/db-storage.ts`, the `uploads` table) because Render's disk is ephemeral. Helmet's CSP is on, so no inline scripts (the pre-paint theme script lives in `apps/web/public/theme.js`).
+  - The demo seed goes through the real services; only history (past events, backdated sales and check-ins) is written as SQL. Cover art is generated (`seed/covers.ts`), so the repo ships no third-party images.
   - CSV downloads go through `toCsv` (`lib/csv.ts`), which escapes cells and defuses spreadsheet formulas.
   - Status changes use conditional updates (`transition(id, from, values)` in the events repository) so concurrent clicks can't both apply.
   - CSRF: `requireSameOrigin` rejects non-GET requests whose `Origin` isn't `WEB_ORIGIN`. In tests, use the `browser()` helper in `test/helpers.ts`, which sets it.

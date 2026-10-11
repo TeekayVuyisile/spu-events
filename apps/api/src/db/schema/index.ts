@@ -6,3 +6,4 @@ export * from './gate';
 export * from './social';
 export * from './community';
 export * from './audit';
+export * from './uploads';

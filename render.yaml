@@ -1,0 +1,32 @@
+# Render Blueprint: one web service runs the API and serves the built web app on
+# the same origin. The database is Neon Postgres (DATABASE_URL, entered once in
+# the Render dashboard). See docs/DEPLOYMENT.md.
+services:
+  - type: web
+    name: monthati
+    runtime: node
+    plan: free
+    region: ohio
+    # Deploys the rebuild branch; switch to main once redesign is merged.
+    branch: redesign
+    # Dev dependencies (Vite, tsup) are needed to build, so include them despite NODE_ENV.
+    buildCommand: npm ci --include=dev && npm run build
+    # Migrate (and seed demo data into an empty database), then start.
+    startCommand: npm run release -w @monthati/api && npm start -w @monthati/api
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: TICKET_SIGNING_SECRET
+        generateValue: true
+      # Render's disk is wiped on every deploy, so uploads live in Postgres.
+      - key: STORAGE
+        value: database
+      - key: WEB_DIST_DIR
+        value: ../web/dist

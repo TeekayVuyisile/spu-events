@@ -11,6 +11,7 @@ import type { PaymentProvider } from './lib/payments';
 import { SESSION_COOKIE } from './lib/session';
 import { UPLOADS_PUBLIC_PATH, type StorageService } from './lib/storage';
 import { ticketSigner } from './lib/ticket-signing';
+import { webApp } from './lib/web-app';
 import { attachUser } from './middleware/auth';
 import { errorHandler, notFound } from './middleware/error-handler';
 import { authRateLimit } from './middleware/rate-limit';
@@ -51,6 +52,8 @@ export interface AppDeps {
   storage: StorageService;
   payments: PaymentProvider;
   bus: LiveBus;
+  /** Built web app to serve on the same origin (production). */
+  webDist?: string;
 }
 
 /** Builds the Express app without listening, so tests can drive it with supertest. */
@@ -63,6 +66,7 @@ export function createApp({
   storage,
   payments,
   bus,
+  webDist,
 }: AppDeps) {
   const app = express();
   const users = usersRepository(db);
@@ -70,12 +74,19 @@ export function createApp({
 
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
-  app.use(helmet());
+  app.use(
+    helmet({
+      // Image previews before upload are blob: URLs; QR codes are data: URLs.
+      contentSecurityPolicy: { directives: { 'img-src': ["'self'", 'data:', 'blob:'] } },
+    }),
+  );
   app.use(cors({ origin: env.WEB_ORIGIN, credentials: true }));
   app.use(express.json({ limit: '100kb' }));
   app.use(pinoHttp({ logger }));
   // Uploaded images: public, cacheable, and served before sessions so they skip that work.
   if (storage.serve) app.use(UPLOADS_PUBLIC_PATH, storage.serve);
+  // The web app's files and pages are public too; anything under /api falls through.
+  if (webDist) app.use(webApp(webDist));
   app.use(
     session({
       name: SESSION_COOKIE,

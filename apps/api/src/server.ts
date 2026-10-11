@@ -6,7 +6,7 @@ import { createDb } from './db/client';
 import { createLogger } from './lib/logger';
 import { inProcessBus } from './lib/live-bus';
 import { simulatedPayments } from './lib/payments';
-import { localDiskStorage } from './lib/storage';
+import { storageFromEnv } from './lib/db-storage';
 
 const env = loadEnv();
 const logger = createLogger(env);
@@ -21,16 +21,17 @@ const app = createApp({
   logger,
   db,
   sessionStore,
-  storage: localDiskStorage(env.UPLOADS_DIR),
+  storage: storageFromEnv(env, db),
   // TODO: swap for a real gateway (PayFast, Yoco…) before handling real money.
   payments: simulatedPayments(),
   // Single-instance fan-out; see lib/live-bus.ts before running more than one API process.
   bus: inProcessBus(),
   pingDb: async () => (await pool.query('select 1')).rowCount === 1,
+  webDist: env.WEB_DIST_DIR,
 });
 
 const server = app.listen(env.PORT, () => {
-  logger.info(`API listening on http://localhost:${env.PORT}`);
+  logger.info(`API listening on port ${env.PORT}`);
 });
 
 async function shutdown(signal: string) {
