@@ -7,7 +7,6 @@ import { DiscoverPage } from '@/routes/discover';
 import { EventPage } from '@/routes/event';
 import { MePage } from '@/routes/me';
 import { NotFoundPage } from '@/routes/not-found';
-import { PlaceholderPage } from '@/routes/placeholder';
 import { BootScreen, RootLayout, RouteError } from '@/routes/route-states';
 import { InboxPage } from '@/routes/inbox';
 import { TicketPage } from '@/routes/ticket';
@@ -74,7 +73,7 @@ export const router = createBrowserRouter([
         lazy: page(() => import('@/components/layout/admin-shell'), 'AdminShell'),
         loader: requireUser(['admin']),
         children: [
-          { index: true, element: <PlaceholderPage title="Dashboard" phase={7} /> },
+          { index: true, lazy: page(() => import('@/routes/admin/dashboard'), 'DashboardPage') },
           { path: 'events', lazy: page(() => import('@/routes/admin/events'), 'AdminEventsPage') },
           {
             path: 'events/new',
@@ -87,6 +86,15 @@ export const router = createBrowserRouter([
           {
             path: 'events/:id/live',
             lazy: page(() => import('@/routes/admin/live-checkins'), 'LiveCheckinsPage'),
+          },
+          {
+            path: 'events/:id/attendees',
+            lazy: page(() => import('@/routes/admin/attendees'), 'AttendeesPage'),
+          },
+          { path: 'users', lazy: page(() => import('@/routes/admin/users'), 'UsersPage') },
+          {
+            path: 'users/:id',
+            lazy: page(() => import('@/routes/admin/user-detail'), 'UserDetailPage'),
           },
           { path: 'staff', lazy: page(() => import('@/routes/admin/staff'), 'StaffPage') },
           {

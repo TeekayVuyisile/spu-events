@@ -17,8 +17,9 @@ export function CardHeader({ className, ...props }: ComponentProps<'div'>) {
   return <div className={cn('flex flex-col gap-1.5 p-5', className)} {...props} />;
 }
 
-export function CardTitle({ className, ...props }: ComponentProps<'h3'>) {
-  return <h3 className={cn('text-lg font-semibold leading-tight', className)} {...props} />;
+/** An h2: cards sit directly under the page's h1, and headings mustn't skip levels. */
+export function CardTitle({ className, ...props }: ComponentProps<'h2'>) {
+  return <h2 className={cn('text-lg font-semibold leading-tight', className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: ComponentProps<'p'>) {

@@ -50,6 +50,13 @@
       "when": 1791684502622,
       "tag": "0006_community",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791722607636,
+      "tag": "0007_admin",
+      "breakpoints": true
     }
   ]
 }

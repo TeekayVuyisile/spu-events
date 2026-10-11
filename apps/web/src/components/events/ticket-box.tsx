@@ -78,7 +78,11 @@ export function TicketBox({ event }: { event: EventDetail }) {
   }
 
   return (
-    <aside className="ticket-notch rounded-xl border bg-card [--notch-y:96px] lg:sticky lg:top-24">
+    // A section, not an aside: it sits inside <main>, where complementary landmarks don't belong.
+    <section
+      aria-label="Tickets"
+      className="ticket-notch rounded-xl border bg-card [--notch-y:96px] lg:sticky lg:top-24"
+    >
       <div className="space-y-1 p-5">
         <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
           Admission
@@ -115,7 +119,7 @@ export function TicketBox({ event }: { event: EventDetail }) {
       </div>
 
       {confirming && <ConfirmDialog event={event} onClose={() => setConfirming(false)} />}
-    </aside>
+    </section>
   );
 }
 

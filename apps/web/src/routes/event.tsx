@@ -94,22 +94,26 @@ export function EventPage() {
 
           <dl className="grid gap-4 sm:grid-cols-2">
             <div className="flex gap-3">
-              <CalendarDays className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
-              <div>
-                <dt className="sr-only">When</dt>
-                <dd className="font-semibold">{formatLongDate(event.startsAt)}</dd>
-                <dd className="tabular text-sm text-muted-foreground">
+              <dt className="mt-0.5 shrink-0">
+                <CalendarDays className="size-5 text-primary" aria-hidden />
+                <span className="sr-only">When</span>
+              </dt>
+              <dd>
+                <span className="block font-semibold">{formatLongDate(event.startsAt)}</span>
+                <span className="tabular block text-sm text-muted-foreground">
                   {formatEventWhen(event.startsAt, event.endsAt)}
-                </dd>
-              </div>
+                </span>
+              </dd>
             </div>
             <div className="flex gap-3">
-              <MapPin className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
-              <div>
-                <dt className="sr-only">Where</dt>
-                <dd className="font-semibold">{event.venue}</dd>
-                <dd className="text-sm text-muted-foreground">Sol Plaatje University</dd>
-              </div>
+              <dt className="mt-0.5 shrink-0">
+                <MapPin className="size-5 text-primary" aria-hidden />
+                <span className="sr-only">Where</span>
+              </dt>
+              <dd>
+                <span className="block font-semibold">{event.venue}</span>
+                <span className="block text-sm text-muted-foreground">Sol Plaatje University</span>
+              </dd>
             </div>
           </dl>
 

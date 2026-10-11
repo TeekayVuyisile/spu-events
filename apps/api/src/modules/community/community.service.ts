@@ -13,6 +13,7 @@ import type { NewNotification } from '../../db/schema';
 import { uniqueViolation } from '../../lib/db-errors';
 import { AppError } from '../../lib/errors';
 import type { StorageService } from '../../lib/storage';
+import { audit } from '../audit/audit.repository';
 import { eventsRepository } from '../events/events.repository';
 import { notify } from '../notifications/notifications.repository';
 import { socialRepository } from '../social/social.repository';
@@ -287,6 +288,12 @@ export function communityService({ db, storage }: { db: Db; storage: StorageServ
             }
             if (input.action === 'remove_and_suspend') {
               await community.suspendUser(targetUserId);
+              await audit(tx, {
+                actorId: adminId,
+                action: 'user_suspended',
+                targetUserId,
+                reason: input.note || `Moderation: ${what} on ${event.title}`,
+              });
               notices.push({
                 userId: targetUserId,
                 kind: 'account_warning',

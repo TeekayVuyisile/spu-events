@@ -34,7 +34,7 @@ export function EventCard({ event }: { event: EventSummary }) {
             <span className="tabular text-xl leading-none font-bold">{day}</span>
           </div>
           <div className="min-w-0 flex-1 space-y-1.5">
-            <h3 className="line-clamp-2 text-lg leading-snug font-semibold">{event.title}</h3>
+            <h2 className="line-clamp-2 text-lg leading-snug font-semibold">{event.title}</h2>
             <p className="flex items-center gap-1.5 truncate text-sm text-muted-foreground">
               <MapPin className="size-4 shrink-0" aria-hidden />
               <span className="truncate">{event.venue}</span>

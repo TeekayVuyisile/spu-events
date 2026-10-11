@@ -26,9 +26,9 @@ Curated from ui-ux-pro-max results: style "Vibrant & Block-based" + "Bento Grids
 | `--cta-foreground` | `24 100% 5%` #1A0B00 | `24 100% 5%` | dark text on orange (white on orange fails contrast) |
 | `--border` | `256 40% 91%` #E4DFF2 | `258 30% 19%` #2A2240 | visible in both modes |
 | `--ring` | = primary | = primary | focus ring 2px + 2px offset |
-| `--success` | #15803D | #4ADE80 | valid scan, credit |
-| `--warning` | #B45309 | #FBBF24 | already used, pending |
-| `--destructive` | #DC2626 | #F87171 | invalid, debit, cancel |
+| `--success` | #166534 | #4ADE80 | valid scan, credit |
+| `--warning` | #92400E | #FBBF24 | already used, pending |
+| `--destructive` | #B91C1C | #F87171 | invalid, debit, cancel |
 
 Rules:
 - Components use only semantic tokens (`bg-primary`, `text-muted-foreground`), never raw hex or `bg-violet-600`.

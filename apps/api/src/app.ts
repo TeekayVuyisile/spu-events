@@ -15,9 +15,15 @@ import { attachUser } from './middleware/auth';
 import { errorHandler, notFound } from './middleware/error-handler';
 import { authRateLimit } from './middleware/rate-limit';
 import { requireSameOrigin } from './middleware/same-origin';
+import { adminUsersRoutes } from './modules/admin-users/admin-users.routes';
+import { adminUsersService } from './modules/admin-users/admin-users.service';
+import { adminAttendeesRoutes } from './modules/attendees/attendees.routes';
+import { attendeesService } from './modules/attendees/attendees.service';
 import { authRoutes } from './modules/auth/auth.routes';
 import { authService } from './modules/auth/auth.service';
 import { adminEventsRoutes, publicEventsRoutes } from './modules/events/events.routes';
+import { dashboardRoutes } from './modules/dashboard/dashboard.routes';
+import { dashboardService } from './modules/dashboard/dashboard.service';
 import { eventsService } from './modules/events/events.service';
 import { adminGateRoutes, gateRoutes } from './modules/gate/gate.routes';
 import { gateService } from './modules/gate/gate.service';
@@ -114,10 +120,13 @@ export function createApp({
   const community = communityService({ db, storage });
   app.use('/api', communityRoutes(community, { limitsEnabled: env.NODE_ENV !== 'test' }));
   app.use('/api/notifications', notificationsRoutes(notificationsService({ db })));
+  app.use('/api/admin/dashboard', dashboardRoutes(dashboardService({ db })));
+  app.use('/api/admin/users', adminUsersRoutes(adminUsersService({ db })));
 
   // Last: these routers guard everything under /api/admin that reaches them.
   app.use('/api/admin', adminGateRoutes(gate, bus));
   app.use('/api/admin', adminCommunityRoutes(community));
+  app.use('/api/admin', adminAttendeesRoutes(attendeesService({ db })));
 
   app.use(notFound);
   app.use(errorHandler);

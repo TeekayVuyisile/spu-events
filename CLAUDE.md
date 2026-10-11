@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate), 5 (social) and 6 (volunteers, moderation, notifications) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
+A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate), 5 (social), 6 (volunteers, moderation, notifications) and 7 (admin dashboard, users, accessibility) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
 
 ## Commands (run from repo root)
 
@@ -36,6 +36,8 @@ npm workspaces:
   - Gate: check-in is one conditional `UPDATE … WHERE status = 'valid'` (`gateRepository.checkIn`); every scan is logged in `scan_logs` and returns `200 { result }` (invalid tickets are answers, not errors). Live counters use Server-Sent Events fed by a `LiveBus` (`lib/live-bus.ts`, in-process: one API instance only until it's swapped for Postgres LISTEN/NOTIFY or Redis).
   - Social: public content shows authors as "First L." (`publicAuthor`), never full names or emails. Paginated feeds use keyset cursors built from Postgres's own `created_at::text` (microseconds), never a JS Date. Event reads use `eventColumns` from `events.repository.ts` so every live counter (tickets sold, likes) comes along. Posting is rate-limited per user (`userRateLimit`).
   - Notifications: call `notify(tx, rows)` (`notifications.repository.ts`) inside the same transaction as the change it announces, never after it. Moderation resolves every open report on an item at once (`communityService.act`).
+  - Admin account actions (suspend, reinstate, wallet adjustments) call `audit(tx, row)` (`audit.repository.ts`) in the same transaction, always with a reason. Reporting queries live in `dashboard.repository.ts` as SQL; revenue comes from the ledger (purchases minus refunds), never from ticket prices, and days are bucketed in campus time.
+  - CSV downloads go through `toCsv` (`lib/csv.ts`), which escapes cells and defuses spreadsheet formulas.
   - Status changes use conditional updates (`transition(id, from, values)` in the events repository) so concurrent clicks can't both apply.
   - CSRF: `requireSameOrigin` rejects non-GET requests whose `Origin` isn't `WEB_ORIGIN`. In tests, use the `browser()` helper in `test/helpers.ts`, which sets it.
 - `apps/web`: React 19 + Vite + Tailwind v4 + shadcn-style components (`components.json`) + Motion (`motion/react`) + TanStack Query + React Router 7 (data router in `src/router.tsx`).
@@ -43,6 +45,7 @@ npm workspaces:
   - Make every API call through `lib/api.ts` `api<T>()`. It sends cookies, parses JSON and throws `ApiRequestError` carrying the server's error shape.
   - `@/` is an alias for `apps/web/src`.
   - Admin, gate and auth routes are code-split with the `page(() => import(...), 'Name')` helper in `router.tsx`; keep new admin pages lazy so students don't download them.
+  - Accessibility: `CardTitle` is an `h2` (cards sit under the page `h1`; never skip levels). Status colours are tuned so text passes 4.5:1 on its own 10% tint, so check contrast with axe before changing them. Charts (Recharts) are `aria-hidden` with a table view as the accessible alternative. Use `Segmented` for one-of-n toggle groups (it adds the 44px hit area).
   - Filters that change what a page shows (Discover, admin lists) live in the URL search params, parsed with the shared Zod query schema.
 
 ## Domain rules that span files

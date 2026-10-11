@@ -9,7 +9,9 @@ import {
   Inbox as InboxIcon,
   RotateCcw,
   ShieldAlert,
+  ShieldCheck,
   Ticket,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react';
 import { Link } from 'react-router';
@@ -30,6 +32,8 @@ const kindIcons: Record<NotificationKind, { icon: LucideIcon; tone: string }> = 
   report_resolved: { icon: Flag, tone: 'bg-primary/12 text-primary' },
   content_removed: { icon: ShieldAlert, tone: 'bg-warning/12 text-warning' },
   account_warning: { icon: ShieldAlert, tone: 'bg-destructive/12 text-destructive' },
+  account_reinstated: { icon: ShieldCheck, tone: 'bg-success/12 text-success' },
+  wallet_adjusted: { icon: Wallet, tone: 'bg-primary/12 text-primary' },
 };
 
 const when = new Intl.DateTimeFormat('en-ZA', {

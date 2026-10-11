@@ -8,6 +8,8 @@ export const NOTIFICATION_KINDS = [
   'report_resolved',
   'content_removed',
   'account_warning',
+  'account_reinstated',
+  'wallet_adjusted',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 

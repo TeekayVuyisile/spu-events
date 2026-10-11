@@ -24,9 +24,10 @@
   --border: #e4dff2;
   --input: #e4dff2;
   --ring: #7c3aed;
-  --success: #15803d;
-  --warning: #b45309;
-  --destructive: #dc2626;
+  /* One shade darker than Tailwind's 700/600 so status text passes 4.5:1 on its own 10% tint. */
+  --success: #166534;
+  --warning: #92400e;
+  --destructive: #b91c1c;
   --destructive-foreground: #ffffff;
   --radius: 1rem;
   color-scheme: light;

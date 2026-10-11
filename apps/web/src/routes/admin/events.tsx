@@ -9,14 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FormAlert } from '@/components/ui/form-alert';
 import { Input } from '@/components/ui/input';
+import { Segmented } from '@/components/ui/segmented';
 import { adminEventsQuery, formatPrice } from '@/lib/events';
-import { cn } from '@/lib/utils';
 
-const tabs: { status?: EventStatus; label: string }[] = [
-  { label: 'All' },
-  { status: 'draft', label: 'Drafts' },
-  { status: 'published', label: 'Published' },
-  { status: 'cancelled', label: 'Cancelled' },
+const tabs: { value: EventStatus | undefined; label: string }[] = [
+  { value: undefined, label: 'All' },
+  { value: 'draft', label: 'Drafts' },
+  { value: 'published', label: 'Published' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 export function AdminEventsPage() {
@@ -62,26 +62,12 @@ export function AdminEventsPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div role="group" aria-label="Status" className="flex gap-1 rounded-lg bg-muted p-1">
-          {tabs.map((tab) => {
-            const active = filters.status === tab.status;
-            return (
-              <button
-                key={tab.label}
-                aria-pressed={active}
-                onClick={() => update('status', tab.status)}
-                className={cn(
-                  'h-9 cursor-pointer rounded-md px-3 text-sm font-medium transition-colors',
-                  active
-                    ? 'bg-card text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+        <Segmented
+          label="Status"
+          options={tabs}
+          value={filters.status}
+          onChange={(status) => update('status', status)}
+        />
         <div className="relative w-full sm:w-72">
           <Search
             className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"

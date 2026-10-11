@@ -1,5 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { CalendarDays, ExternalLink, Flag, LayoutDashboard, Users } from 'lucide-react';
+import {
+  CalendarDays,
+  ExternalLink,
+  Flag,
+  LayoutDashboard,
+  ScanLine,
+  UserRound,
+} from 'lucide-react';
 import { Link, NavLink } from 'react-router';
 import { SignOutButton } from '@/components/account/sign-out-button';
 import { AnimatedOutlet } from '@/components/motion/animated-outlet';
@@ -12,8 +19,9 @@ import { cn } from '@/lib/utils';
 const nav = [
   { to: '/admin', label: 'Overview', icon: LayoutDashboard },
   { to: '/admin/events', label: 'Events', icon: CalendarDays },
+  { to: '/admin/users', label: 'Users', icon: UserRound },
   { to: '/admin/moderation', label: 'Moderation', icon: Flag },
-  { to: '/admin/staff', label: 'Staff & invites', icon: Users },
+  { to: '/admin/staff', label: 'Staff & invites', icon: ScanLine },
 ] as const;
 
 /** Open moderation items, so a backlog is visible from anywhere in admin. */

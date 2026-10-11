@@ -25,6 +25,7 @@ import {
   Send,
   Trash2,
   Undo2,
+  Users,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -609,6 +610,14 @@ function StatusCard({
           <Button asChild variant="outline" className="w-full">
             <Link to={`/admin/events/${event.id}/live`}>
               <Activity aria-hidden /> Live check-ins
+            </Link>
+          </Button>
+        )}
+
+        {event.status !== 'draft' && (
+          <Button asChild variant="outline" className="w-full">
+            <Link to={`/admin/events/${event.id}/attendees`}>
+              <Users aria-hidden /> Attendees
             </Link>
           </Button>
         )}

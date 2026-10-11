@@ -10,7 +10,7 @@ import type { Db } from '../../db/client';
 import { uniqueViolation } from '../../lib/db-errors';
 import { AppError } from '../../lib/errors';
 import { PaymentDeclinedError, type PaymentProvider } from '../../lib/payments';
-import { walletRepository } from './wallet.repository';
+import { walletRepository, type WalletRepository } from './wallet.repository';
 
 function describe(kind: LedgerKind, eventTitle: string | null, note: string | null) {
   switch (kind) {
@@ -27,6 +27,18 @@ function describe(kind: LedgerKind, eventTitle: string | null, note: string | nu
   }
 }
 
+/** Ledger rows as the wallet screens show them. */
+export function toLedgerEntries(rows: Awaited<ReturnType<WalletRepository['history']>>) {
+  return rows.map((r): LedgerEntry => ({
+    id: r.id,
+    amountCents: r.amountCents,
+    kind: r.kind,
+    description: describe(r.kind, r.eventTitle, r.note),
+    balanceAfterCents: r.balanceAfterCents,
+    createdAt: r.createdAt.toISOString(),
+  }));
+}
+
 export const insufficientFunds = (balanceCents: number, neededCents: number) =>
   new AppError(
     409,
@@ -39,15 +51,7 @@ export function walletService({ db, payments }: { db: Db; payments: PaymentProvi
 
   async function get(userId: string): Promise<Wallet> {
     const [balanceCents, rows] = await Promise.all([repo.balance(userId), repo.history(userId)]);
-    const entries: LedgerEntry[] = rows.map((r) => ({
-      id: r.id,
-      amountCents: r.amountCents,
-      kind: r.kind,
-      description: describe(r.kind, r.eventTitle, r.note),
-      balanceAfterCents: r.balanceAfterCents,
-      createdAt: r.createdAt.toISOString(),
-    }));
-    return { balanceCents, entries };
+    return { balanceCents, entries: toLedgerEntries(rows) };
   }
 
   return {
