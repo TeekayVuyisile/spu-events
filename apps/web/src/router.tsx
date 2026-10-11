@@ -9,6 +9,9 @@ import { MePage } from '@/routes/me';
 import { NotFoundPage } from '@/routes/not-found';
 import { PlaceholderPage } from '@/routes/placeholder';
 import { BootScreen, RootLayout, RouteError } from '@/routes/route-states';
+import { TicketPage } from '@/routes/ticket';
+import { TicketsPage } from '@/routes/tickets';
+import { WalletPage } from '@/routes/wallet';
 
 /**
  * Code-split routes: students never download the admin area, gate page or form
@@ -33,8 +36,9 @@ export const router = createBrowserRouter([
           {
             loader: requireUser(['student']),
             children: [
-              { path: 'tickets', element: <PlaceholderPage title="My tickets" phase={3} /> },
-              { path: 'wallet', element: <PlaceholderPage title="Wallet" phase={3} /> },
+              { path: 'tickets', element: <TicketsPage /> },
+              { path: 'tickets/:id', element: <TicketPage /> },
+              { path: 'wallet', element: <WalletPage /> },
             ],
           },
           {

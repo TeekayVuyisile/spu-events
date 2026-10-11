@@ -10,6 +10,7 @@ import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
 import { redirect, type LoaderFunctionArgs } from 'react-router';
 import { api } from '@/lib/api';
 import { meKey, queryClient } from '@/lib/query-client';
+import { clearOfflineTickets } from '@/lib/tickets';
 
 export const meQuery = queryOptions({
   queryKey: meKey,
@@ -41,9 +42,13 @@ export function safeNext(next: string | null) {
   return next?.startsWith('/') && !next.startsWith('//') ? next : null;
 }
 
-/** A new identity starts with a clean cache, so one user's data never shows for another. */
+/**
+ * A new identity starts with a clean cache (memory and offline tickets), so one
+ * user's data never shows for another on a shared device.
+ */
 function setSessionUser(data: MeResponse) {
   queryClient.removeQueries();
+  clearOfflineTickets();
   queryClient.setQueryData(meKey, data);
 }
 

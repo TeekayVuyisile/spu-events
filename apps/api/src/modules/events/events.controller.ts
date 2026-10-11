@@ -9,7 +9,9 @@ export function eventsController(events: EventsService) {
     res.json(await events.listPublished(res.locals.valid.query));
   };
   const getPublished: RequestHandler = async (_req, res) => {
-    res.json({ event: await events.getPublished(res.locals.valid.params.slug) });
+    res.json({
+      event: await events.getPublished(res.locals.valid.params.slug, res.locals.user?.id),
+    });
   };
 
   // ── Admin ──

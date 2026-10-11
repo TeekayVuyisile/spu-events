@@ -1,14 +1,15 @@
 import { CATEGORY_LABELS, formatEventWhen, formatLongDate } from '@monthati/shared';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, CalendarDays, CalendarX, HandHelping, MapPin, Users } from 'lucide-react';
+import { ArrowLeft, CalendarDays, CalendarX, HandHelping, MapPin } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { categoryIcons } from '@/components/events/category-icons';
 import { EventCover } from '@/components/events/event-cover';
+import { TicketBox } from '@/components/events/ticket-box';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ApiRequestError } from '@/lib/api';
-import { eventQuery, formatPrice, hasEnded, isLive } from '@/lib/events';
+import { eventQuery, hasEnded, isLive } from '@/lib/events';
 import { NotFoundPage } from '@/routes/not-found';
 
 export function EventPage() {
@@ -117,30 +118,7 @@ export function EventPage() {
           )}
         </div>
 
-        {/* Ticket stub: price, capacity and the view's one CTA. */}
-        <aside className="ticket-notch rounded-xl border bg-card [--notch-y:96px] lg:sticky lg:top-24">
-          <div className="space-y-1 p-5">
-            <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-              Admission
-            </p>
-            <p className="tabular text-3xl font-bold">{formatPrice(event.priceCents)}</p>
-          </div>
-          <div className="perforation mx-5" />
-          <div className="space-y-4 p-5">
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Users className="size-4" aria-hidden />
-              <span className="tabular">{event.capacity.toLocaleString('en-ZA')}</span> spots
-            </p>
-            <Button variant="cta" size="lg" className="w-full" disabled>
-              {cancelled ? 'Cancelled' : ended ? 'Event ended' : 'Get ticket'}
-            </Button>
-            {!cancelled && !ended && (
-              <p className="text-center text-sm text-muted-foreground">
-                Ticket sales open in phase 3 of the redesign.
-              </p>
-            )}
-          </div>
-        </aside>
+        <TicketBox event={event} />
       </div>
     </article>
   );

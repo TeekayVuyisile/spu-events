@@ -148,7 +148,7 @@ export function AdminEventsPage() {
                     {formatPrice(event.priceCents)}
                   </p>
                   <p className="tabular hidden w-20 text-right text-sm text-muted-foreground lg:block">
-                    {event.capacity.toLocaleString('en-ZA')}
+                    {event.ticketsSold}/{event.capacity}
                   </p>
                   <div className="w-28 shrink-0 text-right">
                     <EventStatusBadge event={event} />

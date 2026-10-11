@@ -14,6 +14,7 @@ import { EventCover } from './event-cover';
 export function EventCard({ event }: { event: EventSummary }) {
   const { month, day } = dateBlock(event.startsAt);
   const live = isLive(event);
+  const spotsLeft = Math.max(0, event.capacity - event.ticketsSold);
 
   return (
     <motion.article
@@ -51,6 +52,11 @@ export function EventCard({ event }: { event: EventSummary }) {
                   />
                   Live now
                 </Badge>
+              )}
+              {spotsLeft === 0 ? (
+                <Badge>Sold out</Badge>
+              ) : (
+                spotsLeft <= 10 && <Badge tone="warning">{spotsLeft} left</Badge>
               )}
             </div>
           </div>

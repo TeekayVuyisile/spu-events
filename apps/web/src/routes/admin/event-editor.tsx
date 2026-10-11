@@ -152,6 +152,7 @@ function Editor({ event }: { event?: AdminEvent }) {
   const queryClient = useQueryClient();
   const [pendingCover, setPendingCover] = useState<File | null>(null);
   const readOnly = event?.status === 'cancelled';
+  const sold = event?.ticketsSold ?? 0;
 
   const form = useForm<FormValues, unknown, EventInput>({
     resolver: zodResolver(formSchema),
@@ -301,21 +302,30 @@ function Editor({ event }: { event?: AdminEvent }) {
                 <Field
                   label="Price (R)"
                   error={errors.priceCents?.message}
-                  hint="0 makes it a free event."
+                  hint={
+                    sold > 0
+                      ? 'Locked: tickets have been sold at this price.'
+                      : '0 makes it a free event.'
+                  }
                 >
                   {(c) => (
                     <Input
                       {...c}
                       {...form.register('priceCents')}
                       inputMode="decimal"
-                      className="tabular"
+                      readOnly={sold > 0}
+                      className="tabular read-only:bg-muted"
                     />
                   )}
                 </Field>
                 <Field
                   label="Capacity"
                   error={errors.capacity?.message}
-                  hint="How many tickets can be issued."
+                  hint={
+                    sold > 0
+                      ? `At least ${sold}: that many tickets are sold.`
+                      : 'How many tickets can be issued.'
+                  }
                 >
                   {(c) => (
                     <Input
@@ -544,6 +554,22 @@ function StatusCard({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
+        {event.status !== 'draft' && (
+          <div className="space-y-1.5 pb-1">
+            <p className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Tickets sold</span>
+              <span className="tabular font-semibold">
+                {event.ticketsSold} / {event.capacity}
+              </span>
+            </p>
+            <div className="h-2 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary"
+                style={{ width: `${Math.min(100, (event.ticketsSold / event.capacity) * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
         {event.status === 'draft' && (
           <>
             <Button
@@ -672,7 +698,7 @@ function CancelDialog({
     >
       <DialogContent
         title="Cancel this event?"
-        description="Students will see it as cancelled, with your reason. This can’t be undone."
+        description="Every ticket holder is refunded to their wallet straight away, and students see your reason. This can’t be undone."
       >
         <form onSubmit={form.handleSubmit(onConfirm)} noValidate className="space-y-4">
           <Field label="Reason" error={form.formState.errors.reason?.message}>

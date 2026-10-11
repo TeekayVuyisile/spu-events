@@ -7,6 +7,8 @@ const envSchema = z.object({
   WEB_ORIGIN: z.url().default('http://localhost:5173'),
   /** Signs the session cookie. Generate with: node -e "console.log(crypto.randomBytes(32).toString('hex'))" */
   SESSION_SECRET: z.string().min(32, 'must be at least 32 characters'),
+  /** Signs ticket QR codes. Changing it invalidates every issued QR code. */
+  TICKET_SIGNING_SECRET: z.string().min(32, 'must be at least 32 characters'),
   /** Local folder for uploaded files (relative to apps/api). Ignored by git. */
   UPLOADS_DIR: z.string().default('uploads'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),

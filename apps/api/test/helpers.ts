@@ -6,6 +6,7 @@ import { createApp, type AppDeps } from '../src/app';
 import { createDb } from '../src/db/client';
 import { createLogger } from '../src/lib/logger';
 import { hashPassword } from '../src/lib/password';
+import { PaymentDeclinedError, type PaymentProvider } from '../src/lib/payments';
 import { memoryStorage } from '../src/lib/storage';
 import { usersRepository } from '../src/modules/users/users.repository';
 import { testDatabaseUrl } from './test-db-url';
@@ -18,19 +19,47 @@ export const { db, pool } = createDb(testDatabaseUrl());
 /** Call at the top of a test file that touches the database. */
 export function useTestDb() {
   beforeEach(async () => {
-    await pool.query('truncate users, invites, sessions, events restart identity cascade');
+    await pool.query(
+      'truncate users, invites, sessions, events, tickets, wallet_ledger restart identity cascade',
+    );
   });
   afterAll(() => pool.end());
 }
 
+export const TICKET_SECRET = 'test-ticket-secret-'.padEnd(40, 'x');
+
+/** Simulated payments that can be told to decline, to test failure paths. */
+export function fakePayments() {
+  const state = { declineCharges: false, declinePayouts: false, charges: 0, payouts: 0 };
+  const provider: PaymentProvider = {
+    async charge() {
+      if (state.declineCharges) throw new PaymentDeclinedError('Card declined');
+      state.charges += 1;
+      return `ch_test_${state.charges}`;
+    },
+    async payout() {
+      if (state.declinePayouts) throw new PaymentDeclinedError('Bank rejected the payout');
+      state.payouts += 1;
+      return `po_test_${state.payouts}`;
+    },
+  };
+  return Object.assign(provider, { state });
+}
+
 export function buildApp(overrides: Partial<AppDeps> = {}) {
   return createApp({
-    env: { NODE_ENV: 'test', WEB_ORIGIN: ORIGIN, SESSION_SECRET: 'test-secret-'.padEnd(40, 'x') },
+    env: {
+      NODE_ENV: 'test',
+      WEB_ORIGIN: ORIGIN,
+      SESSION_SECRET: 'test-secret-'.padEnd(40, 'x'),
+      TICKET_SIGNING_SECRET: TICKET_SECRET,
+    },
     logger: createLogger({ NODE_ENV: 'test', LOG_LEVEL: 'silent' }),
     db,
     pingDb: async () => true,
     sessionStore: new session.MemoryStore(),
     storage: memoryStorage(),
+    payments: fakePayments(),
     ...overrides,
   });
 }

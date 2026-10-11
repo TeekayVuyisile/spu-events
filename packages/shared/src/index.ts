@@ -4,3 +4,5 @@ export * from './api';
 export * from './auth';
 export * from './events';
 export * from './time';
+export * from './wallet';
+export * from './tickets';

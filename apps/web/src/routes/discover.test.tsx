@@ -21,6 +21,7 @@ const event = (title: string, priceCents: number): EventSummary => ({
   endsAt: '2030-10-24T21:00:00.000Z',
   priceCents,
   capacity: 100,
+  ticketsSold: 0,
   status: 'published',
   coverUrl: null,
 });

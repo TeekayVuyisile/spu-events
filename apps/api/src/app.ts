@@ -6,8 +6,10 @@ import { pinoHttp } from 'pino-http';
 import type { Env } from './config/env';
 import type { Db } from './db/client';
 import type { Logger } from './lib/logger';
+import type { PaymentProvider } from './lib/payments';
 import { SESSION_COOKIE } from './lib/session';
 import { UPLOADS_PUBLIC_PATH, type StorageService } from './lib/storage';
+import { ticketSigner } from './lib/ticket-signing';
 import { attachUser } from './middleware/auth';
 import { errorHandler, notFound } from './middleware/error-handler';
 import { authRateLimit } from './middleware/rate-limit';
@@ -19,19 +21,24 @@ import { eventsService } from './modules/events/events.service';
 import { healthRoutes } from './modules/health/health.routes';
 import { adminInvitesRoutes, publicInvitesRoutes } from './modules/invites/invites.routes';
 import { invitesService } from './modules/invites/invites.service';
+import { purchaseRoute, ticketsRoutes } from './modules/tickets/tickets.routes';
+import { ticketsService } from './modules/tickets/tickets.service';
 import { usersRepository } from './modules/users/users.repository';
+import { walletRoutes } from './modules/wallet/wallet.routes';
+import { walletService } from './modules/wallet/wallet.service';
 
 export interface AppDeps {
-  env: Pick<Env, 'NODE_ENV' | 'WEB_ORIGIN' | 'SESSION_SECRET'>;
+  env: Pick<Env, 'NODE_ENV' | 'WEB_ORIGIN' | 'SESSION_SECRET' | 'TICKET_SIGNING_SECRET'>;
   logger: Logger;
   db: Db;
   pingDb: () => Promise<boolean>;
   sessionStore: session.Store;
   storage: StorageService;
+  payments: PaymentProvider;
 }
 
 /** Builds the Express app without listening, so tests can drive it with supertest. */
-export function createApp({ env, logger, db, pingDb, sessionStore, storage }: AppDeps) {
+export function createApp({ env, logger, db, pingDb, sessionStore, storage, payments }: AppDeps) {
   const app = express();
   const users = usersRepository(db);
   const limiter = authRateLimit({ enabled: env.NODE_ENV !== 'test' });
@@ -72,7 +79,15 @@ export function createApp({ env, logger, db, pingDb, sessionStore, storage }: Ap
   app.use('/api/invites', publicInvitesRoutes(invites, limiter));
 
   const events = eventsService({ db, storage });
+  const tickets = ticketsService({
+    db,
+    storage,
+    signer: ticketSigner(env.TICKET_SIGNING_SECRET),
+  });
+  app.post('/api/events/:id/tickets', ...purchaseRoute(tickets));
   app.use('/api/events', publicEventsRoutes(events));
+  app.use('/api/tickets', ticketsRoutes(tickets));
+  app.use('/api/wallet', walletRoutes(walletService({ db, payments })));
   app.use('/api/admin/events', adminEventsRoutes(events));
 
   app.use(notFound);

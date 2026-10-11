@@ -1,19 +1,13 @@
-import type {
-  AdminEvent,
-  AdminEventListQuery,
-  EventDetail,
-  EventInput,
-  EventListQuery,
-  EventPage,
-  EventSummary,
-} from '@monthati/shared';
+import type { AdminEventListQuery, EventInput, EventListQuery, EventPage } from '@monthati/shared';
 import { randomBytes } from 'node:crypto';
 import type { Db } from '../../db/client';
-import type { EventRow } from '../../db/schema';
 import { uniqueViolation } from '../../lib/db-errors';
 import { AppError } from '../../lib/errors';
 import { detectImage } from '../../lib/image';
 import type { StorageService } from '../../lib/storage';
+import { refundTickets } from '../tickets/tickets.service';
+import { ticketsRepository } from '../tickets/tickets.repository';
+import { eventMappers } from './events.mappers';
 import { eventsRepository } from './events.repository';
 
 /** "Spring Formal 2026!" → "spring-formal-2026-k3x9". The suffix keeps slugs unique. */
@@ -40,39 +34,17 @@ const startInPast = () =>
 export function eventsService({ db, storage }: { db: Db; storage: StorageService }) {
   const repo = eventsRepository(db);
 
-  const toSummary = (e: EventRow): EventSummary => ({
-    id: e.id,
-    slug: e.slug,
-    title: e.title,
-    category: e.category,
-    venue: e.venue,
-    startsAt: e.startsAt.toISOString(),
-    endsAt: e.endsAt.toISOString(),
-    priceCents: e.priceCents,
-    capacity: e.capacity,
-    status: e.status,
-    coverUrl: e.coverKey ? storage.url(e.coverKey) : null,
-  });
-
-  const toDetail = (e: EventRow): EventDetail => ({
-    ...toSummary(e),
-    description: e.description,
-    volunteersWanted: e.volunteersWanted,
-    cancelledAt: e.cancelledAt?.toISOString() ?? null,
-    cancellationReason: e.cancellationReason,
-  });
-
-  const toAdmin = (e: EventRow): AdminEvent => ({
-    ...toDetail(e),
-    publishedAt: e.publishedAt?.toISOString() ?? null,
-    createdAt: e.createdAt.toISOString(),
-    updatedAt: e.updatedAt.toISOString(),
-  });
+  const { toSummary, toDetail, toAdmin } = eventMappers(storage);
 
   async function getOrThrow(id: string) {
     const event = await repo.findById(id);
     if (!event) throw notFound();
     return event;
+  }
+
+  /** Re-reads after a write, so responses include the live ticket count. */
+  async function reload(id: string) {
+    return toAdmin(await getOrThrow(id));
   }
 
   /** Explains why a status change didn't apply, given the event's current state. */
@@ -102,10 +74,13 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
     },
 
     /** Drafts are invisible to the public. Cancelled events stay viewable so ticket holders see why. */
-    async getPublished(slug: string) {
+    async getPublished(slug: string, viewerId?: string) {
       const event = await repo.findBySlug(slug);
       if (!event || event.status === 'draft') throw notFound();
-      return toDetail(event);
+      const mine = viewerId
+        ? await ticketsRepository(db).findActive(event.id, viewerId)
+        : undefined;
+      return toDetail(event, mine?.id ?? null);
     },
 
     // ── Admin ───────────────────────────────────────────────
@@ -127,7 +102,7 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
         endsAt: new Date(input.endsAt),
         createdById: adminId,
       });
-      return toAdmin(event);
+      return reload(event.id);
     },
 
     async update(id: string, input: EventInput) {
@@ -140,9 +115,18 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
       if (startsAt.getTime() !== current.startsAt.getTime() && startsAt <= new Date()) {
         throw startInPast();
       }
-      // TODO(phase 3): block lowering capacity below tickets sold, and price changes after sales.
-      const event = await repo.update(id, { ...input, startsAt, endsAt: new Date(input.endsAt) });
-      return toAdmin(event!);
+      // Once tickets are sold, the price is locked (holders paid it) and capacity can't drop below sales.
+      const fields: Record<string, string[]> = {};
+      if (current.ticketsSold > 0 && input.priceCents !== current.priceCents) {
+        fields.priceCents = ['The price is locked once tickets are sold'];
+      }
+      if (input.capacity < current.ticketsSold) {
+        fields.capacity = [`${current.ticketsSold} tickets are already sold`];
+      }
+      if (Object.keys(fields).length) throw AppError.conflict('Some fields need attention', fields);
+
+      await repo.update(id, { ...input, startsAt, endsAt: new Date(input.endsAt) });
+      return reload(id);
     },
 
     async publish(id: string) {
@@ -155,25 +139,46 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
         publishedAt: new Date(),
       });
       if (!event) throw await transitionError(id, 'publish');
-      return toAdmin(event);
+      return reload(id);
     },
 
-    /** Back to draft, hiding it from students. TODO(phase 3): refuse once tickets are sold. */
+    /** Back to draft, hiding it from students. Only before any tickets are sold. */
     async unpublish(id: string) {
-      const event = await repo.transition(id, 'published', { status: 'draft', publishedAt: null });
-      if (!event) throw await transitionError(id, 'unpublish');
-      return toAdmin(event);
+      await db.transaction(async (tx) => {
+        const event = await eventsRepository(tx).lock(id);
+        if (!event) throw notFound();
+        if (event.ticketsSold > 0) {
+          throw AppError.conflict(
+            'Tickets have been sold, so this event can’t go back to draft. Cancel it instead: that refunds everyone.',
+          );
+        }
+        const done = await eventsRepository(tx).transition(id, 'published', {
+          status: 'draft',
+          publishedAt: null,
+        });
+        if (!done) throw AppError.conflict(`Can’t unpublish an event that is ${event.status}`);
+      });
+      return reload(id);
     },
 
-    /** TODO(phase 3): refund every ticket holder in the same transaction. */
+    /**
+     * Cancels the event and refunds every ticket holder in one transaction: either
+     * everyone is refunded and the event is cancelled, or nothing changes.
+     */
     async cancel(id: string, reason: string) {
-      const event = await repo.transition(id, 'published', {
-        status: 'cancelled',
-        cancelledAt: new Date(),
-        cancellationReason: reason,
+      await db.transaction(async (tx) => {
+        const event = await eventsRepository(tx).lock(id);
+        if (!event) throw notFound();
+        const done = await eventsRepository(tx).transition(id, 'published', {
+          status: 'cancelled',
+          cancelledAt: new Date(),
+          cancellationReason: reason,
+        });
+        if (!done) throw AppError.conflict(`Can’t cancel an event that is ${event.status}`);
+        const cancelled = await ticketsRepository(tx).cancelAllForEvent(id);
+        await refundTickets(tx, cancelled);
       });
-      if (!event) throw await transitionError(id, 'cancel');
-      return toAdmin(event);
+      return reload(id);
     },
 
     /** Copies everything (including the cover image) into a new draft. */
@@ -200,7 +205,7 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
         coverKey,
         createdById: adminId,
       });
-      return toAdmin(event);
+      return reload(event.id);
     },
 
     /** Only drafts can be deleted; published events are cancelled instead, keeping a record. */
@@ -224,17 +229,17 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
 
       const key = `events/${id}-${randomBytes(8).toString('hex')}.${image.ext}`;
       await storage.put(key, file, image.contentType);
-      const event = await repo.update(id, { coverKey: key });
+      await repo.update(id, { coverKey: key });
       // Remove the old file only once the new one is saved and referenced.
       if (current.coverKey) await storage.delete(current.coverKey);
-      return toAdmin(event!);
+      return reload(id);
     },
 
     async removeCover(id: string) {
       const current = await getOrThrow(id);
-      const event = await repo.update(id, { coverKey: null });
+      await repo.update(id, { coverKey: null });
       if (current.coverKey) await storage.delete(current.coverKey);
-      return toAdmin(event!);
+      return reload(id);
     },
   };
 }

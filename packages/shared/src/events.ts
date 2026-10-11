@@ -100,6 +100,8 @@ export interface EventSummary {
   endsAt: string;
   priceCents: number;
   capacity: number;
+  /** Valid and used tickets. Spots left = capacity - ticketsSold. */
+  ticketsSold: number;
   status: EventStatus;
   coverUrl: string | null;
 }
@@ -109,6 +111,8 @@ export interface EventDetail extends EventSummary {
   volunteersWanted: boolean;
   cancelledAt: string | null;
   cancellationReason: string | null;
+  /** The signed-in student's active ticket for this event, if any. */
+  myTicketId: string | null;
 }
 
 export interface AdminEvent extends EventDetail {
