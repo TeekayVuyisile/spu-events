@@ -7,8 +7,7 @@ services:
     runtime: node
     plan: free
     region: ohio
-    # Deploys the rebuild branch; switch to main once redesign is merged.
-    branch: redesign
+    branch: main
     # Dev dependencies (Vite, tsup) are needed to build, so include them despite NODE_ENV.
     buildCommand: npm ci --include=dev && npm run build
     # Migrate (and seed demo data into an empty database), then start.

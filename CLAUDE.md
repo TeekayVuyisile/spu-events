@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate), 5 (social), 6 (volunteers, moderation, notifications) and 7 (admin dashboard, users, accessibility) are done. Phase 8 (ship: demo seed, Render + Neon deployment, README) is in progress; see `docs/DEPLOYMENT.md`. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
+The app was rebuilt from an older Express/EJS version, which was removed in phase 8 (it's still in git history). `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate), 5 (social), 6 (volunteers, moderation, notifications) and 7 (admin dashboard, users, accessibility) are done. Phase 8 (ship: demo seed, Render + Neon deployment, README) is in progress; see `docs/DEPLOYMENT.md`. `main` is the deployed branch (Render auto-deploys it).
 
 ## Commands (run from repo root)
 
@@ -15,8 +15,7 @@ A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` 
 - Database: change `apps/api/src/db/schema/*`, run `npm run db:generate -- --name <change>`, then run `npm run db:migrate`. Never hand-edit an applied migration in `apps/api/drizzle/`.
 - First admin: `npm run user:create-admin -- --email <email> --first-name <name> --last-name <name>` (prompts for the password, or reads `ADMIN_PASSWORD`). Every other staff or admin account comes from an invite.
 - Demo data: `DEMO_PASSWORD=… npm run db:setup -w @monthati/api` migrates, then seeds an **empty** database (`src/seed/demo.ts`). In production, `npm run release -w @monthati/api` (`src/release.ts`) does the same before every start.
-- Config: `apps/api/.env` (copy `.env.example`; URL-encode special characters in the password). The legacy app reads `legacy/.env`.
-
+- Config: `apps/api/.env` (copy `.env.example`; URL-encode special characters in the password).
 ## Architecture
 
 npm workspaces:

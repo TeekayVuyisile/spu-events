@@ -5,7 +5,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['legacy/**', 'design-system/**', '**/dist/**', '**/drizzle/**', '**/coverage/**'] },
+  { ignores: ['design-system/**', '**/dist/**', '**/drizzle/**', '**/coverage/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
