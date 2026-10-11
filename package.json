@@ -19,7 +19,8 @@
     "test": "npm run test --workspaces --if-present",
     "db:generate": "npm run db:generate -w @monthati/api --",
     "db:migrate": "npm run db:migrate -w @monthati/api",
-    "db:studio": "npm run db:studio -w @monthati/api"
+    "db:studio": "npm run db:studio -w @monthati/api",
+    "user:create-admin": "npm run user:create-admin -w @monthati/api --"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

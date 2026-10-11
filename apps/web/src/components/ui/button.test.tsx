@@ -24,4 +24,13 @@ describe('Button', () => {
     await userEvent.click(button);
     expect(onClick).not.toHaveBeenCalled();
   });
+
+  it('renders its single child when asChild', () => {
+    render(
+      <Button asChild>
+        <a href="/login">Log in</a>
+      </Button>,
+    );
+    expect(screen.getByRole('link', { name: 'Log in' })).toHaveClass('rounded-md');
+  });
 });

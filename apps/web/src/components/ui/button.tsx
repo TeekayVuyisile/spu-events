@@ -43,9 +43,16 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const Comp = asChild ? Slot : 'button';
+  // Slot needs exactly one child, so asChild buttons (links) never get the spinner.
+  if (asChild) {
+    return (
+      <Slot className={cn(buttonVariants({ variant, size }), className)} {...props}>
+        {children}
+      </Slot>
+    );
+  }
   return (
-    <Comp
+    <button
       className={cn(buttonVariants({ variant, size }), className)}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
@@ -53,6 +60,6 @@ export function Button({
     >
       {loading && <Loader2 className="animate-spin" aria-hidden />}
       {children}
-    </Comp>
+    </button>
   );
 }

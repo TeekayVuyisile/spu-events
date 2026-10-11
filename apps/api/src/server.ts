@@ -1,3 +1,5 @@
+import connectPgSimple from 'connect-pg-simple';
+import session from 'express-session';
 import { createApp } from './app';
 import { loadEnv } from './config/env';
 import { createDb } from './db/client';
@@ -5,11 +7,17 @@ import { createLogger } from './lib/logger';
 
 const env = loadEnv();
 const logger = createLogger(env);
-const { pool } = createDb(env.DATABASE_URL);
+const { db, pool } = createDb(env.DATABASE_URL);
+
+// The sessions table comes from our Drizzle migrations, not from connect-pg-simple.
+const PgStore = connectPgSimple(session);
+const sessionStore = new PgStore({ pool, tableName: 'sessions', pruneSessionInterval: 15 * 60 });
 
 const app = createApp({
   env,
   logger,
+  db,
+  sessionStore,
   pingDb: async () => (await pool.query('select 1')).rowCount === 1,
 });
 
@@ -20,6 +28,7 @@ const server = app.listen(env.PORT, () => {
 async function shutdown(signal: string) {
   logger.info(`${signal} received, shutting down`);
   server.close();
+  sessionStore.close();
   await pool.end();
   process.exit(0);
 }

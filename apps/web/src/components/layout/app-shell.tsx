@@ -1,7 +1,10 @@
 import { CalendarDays, Inbox, Ticket, UserRound, Wallet } from 'lucide-react';
-import { NavLink } from 'react-router';
+import { Link, NavLink } from 'react-router';
 import { AnimatedOutlet } from '@/components/motion/animated-outlet';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { Avatar } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { useSession } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
 const nav = [
@@ -11,6 +14,29 @@ const nav = [
   { to: '/inbox', label: 'Inbox', icon: Inbox },
   { to: '/me', label: 'Me', icon: UserRound },
 ] as const;
+
+/** Avatar link to the profile when signed in, a Log in button when not. */
+function AccountButton() {
+  const { user, isPending } = useSession();
+  if (isPending) return <span className="size-11" />;
+  if (!user) {
+    return (
+      <Button asChild size="sm" className="h-11">
+        <Link to="/login">Log in</Link>
+      </Button>
+    );
+  }
+  return (
+    <Link
+      to="/me"
+      aria-label="Your profile"
+      title={`${user.firstName} ${user.lastName}`}
+      className="flex size-11 items-center justify-center rounded-full"
+    >
+      <Avatar user={user} />
+    </Link>
+  );
+}
 
 /** Student shell: top nav on desktop, bottom tab bar under 768px (MASTER.md §7). */
 export function AppShell() {
@@ -48,7 +74,10 @@ export function AppShell() {
             ))}
           </nav>
 
-          <ThemeToggle />
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <AccountButton />
+          </div>
         </div>
       </header>
 

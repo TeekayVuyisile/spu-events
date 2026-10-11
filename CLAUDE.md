@@ -4,15 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phase 0 (foundations) is done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
+A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations) and 1 (auth and roles) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
 
 ## Commands (run from repo root)
 
 - `npm install`: installs every workspace (Node ≥ 22.12; see `.nvmrc`)
 - `npm run dev`: API on :4000 and web on :5173. Vite proxies `/api` to the API, so the browser stays same-origin.
-- `npm test`: Vitest in every workspace. To run one file: `npx vitest run apps/api/test/health.test.ts`. To filter by name: `npx vitest run -t "health"`.
+- `npm test`: Vitest in every workspace. API tests are integration tests against a real Postgres database in `TEST_DATABASE_URL` (its name must contain "test"; the suite migrates it and truncates tables before each test). CI runs a Postgres service for them. To run one file: `npx vitest run apps/api/test/health.test.ts`. To filter by name: `npx vitest run -t "health"`.
 - `npm run lint` · `npm run typecheck` · `npm run format` · `npm run build`. CI (`.github/workflows/ci.yml`) runs format:check, lint, typecheck, test and build.
 - Database: change `apps/api/src/db/schema/*`, run `npm run db:generate -- --name <change>`, then run `npm run db:migrate`. Never hand-edit an applied migration in `apps/api/drizzle/`.
+- First admin: `npm run user:create-admin -- --email <email> --first-name <name> --last-name <name>` (prompts for the password, or reads `ADMIN_PASSWORD`). Every other staff or admin account comes from an invite.
 - Config: `apps/api/.env` (copy `.env.example`; URL-encode special characters in the password). The legacy app reads `legacy/.env`.
 
 ## Architecture
@@ -26,7 +27,11 @@ npm workspaces:
   - Feature code goes in `src/modules/<feature>/` and follows the layers **routes → controller → service → repository (Drizzle)**. Keep business rules in services.
   - Errors: services throw `AppError` (`lib/errors.ts`). `middleware/error-handler.ts` turns them into `{ error: { code, message, fields? } }` (`ApiError` in shared). Validate input with `validate(part, schema)` using shared Zod schemas. The parsed values land in `res.locals.valid`.
   - Drizzle uses `casing: 'snake_case'`: camelCase in TS, snake_case in SQL.
+  - Repositories take an `Executor` (db or transaction), so services compose atomic writes with `db.transaction((tx) => repo(tx)…)`.
+  - Auth: httpOnly cookie sessions (`express-session` + `connect-pg-simple`, table `sessions` owned by our migrations), argon2id passwords. `attachUser` reloads the user on each request into `res.locals.user`, so suspensions apply immediately. Guard routes with `requireAuth` / `requireRole(...)` from `middleware/auth.ts`. Call `startSession` on every login (it regenerates the session id).
+  - CSRF: `requireSameOrigin` rejects non-GET requests whose `Origin` isn't `WEB_ORIGIN`. In tests, use the `browser()` helper in `test/helpers.ts`, which sets it.
 - `apps/web`: React 19 + Vite + Tailwind v4 + shadcn-style components (`components.json`) + Motion (`motion/react`) + TanStack Query + React Router 7 (data router in `src/router.tsx`).
+  - Session state: `useSession()` in `lib/auth.ts`. Protect routes with the `requireUser(roles?)` loader, not in components. Forms use react-hook-form + the shared Zod schema; `applyServerError(form, err)` maps API field errors onto inputs.
   - Make every API call through `lib/api.ts` `api<T>()`. It sends cookies, parses JSON and throws `ApiRequestError` carrying the server's error shape.
   - `@/` is an alias for `apps/web/src`.
 

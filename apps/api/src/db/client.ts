@@ -9,3 +9,6 @@ export function createDb(databaseUrl: string) {
 }
 
 export type Db = ReturnType<typeof createDb>['db'];
+export type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
+/** Repositories accept either the pool-backed db or a transaction. */
+export type Executor = Db | Tx;

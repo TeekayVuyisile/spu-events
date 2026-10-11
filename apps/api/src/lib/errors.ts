@@ -22,7 +22,7 @@ export class AppError extends Error {
   static notFound(message = 'Not found') {
     return new AppError(404, 'NOT_FOUND', message);
   }
-  static conflict(message: string) {
-    return new AppError(409, 'CONFLICT', message);
+  static conflict(message: string, fields?: Record<string, string[]>) {
+    return new AppError(409, 'CONFLICT', message, fields);
   }
 }

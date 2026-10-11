@@ -73,7 +73,7 @@ packages/
 |---|---|---|
 | Validation | **Zod** in `packages/shared` | One schema checks both the API input and the React forms. |
 | DB access | **Drizzle ORM** + drizzle-kit migrations | Close to SQL, fully typed, real migration files. |
-| Auth | httpOnly cookie sessions (`express-session` + `connect-pg-simple`), bcrypt, CSRF protection | Simpler and safer than JWTs in localStorage for a same-site app. |
+| Auth | httpOnly cookie sessions (`express-session` + `connect-pg-simple`), **argon2id** (`@node-rs/argon2`), CSRF protection by `Origin` check plus SameSite=Lax cookies | Simpler and safer than JWTs in localStorage for a same-site app. Argon2id is the current OWASP recommendation over bcrypt. |
 | API structure | `routes → controllers (thin) → services (business logic) → repositories (Drizzle)` | No more 2,400-line controllers. Services can be tested on their own. |
 | Authorization | One `requireRole(...roles)` middleware | Replaces the six copied auth/check files. |
 | Errors | Typed `AppError` + central error handler + consistent JSON error shape | — |
@@ -93,7 +93,7 @@ packages/
 Each phase is a vertical slice: schema → API → UI → tests. Each phase gets its own branch and PR.
 
 0. ✅ **Setup (done 2026-10-10):** monorepo, tooling, CI, env config, DB + migrations, design system (ui-ux-pro-max), app shell, layout and motion primitives.
-1. **Auth and roles:** sign up, log in, sessions, `requireRole`, admin invites for staff.
+1. ✅ **Auth and roles (done 2026-10-11):** student sign-up and login (student number or email), Postgres-backed sessions, `requireRole`, single-use hashed admin invites for staff and admins, `user:create-admin` CLI for the first admin, rate-limited auth routes. Invite links are shared by hand until email delivery lands in phase 6.
 2. **Events:** admin CRUD with draft/publish, image upload, student discover and search, event page.
 3. **Wallet and tickets:** ledger, top-up and withdraw, one-step purchase with a capacity lock, signed QR, my tickets, cancel and refund.
 4. **Gate:** staff scanner, atomic check-in, scan logs, live counter.
