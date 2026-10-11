@@ -12,6 +12,15 @@ Campus events for Sol Plaatje University students: discover events, pay from a c
 
 Demo passwords are shared on request.
 
+![Admin dashboard: revenue, tickets sold, check-in rate and daily sales](docs/screenshots/admin-dashboard.jpg)
+
+| | |
+|---|---|
+| ![Discover page with search and filters](docs/screenshots/discover.jpg) | ![Event page with a map of the venue and Google Maps links](docs/screenshots/event-map.jpg) |
+| **Discover:** search and filters kept in the URL | **Getting there:** the venue on a map, with directions |
+| ![Admin events list with drafts and sales](docs/screenshots/admin-events.jpg) | ![Event editor suggesting campus places as you type](docs/screenshots/location-picker.jpg) |
+| **Events:** drafts, sales and status at a glance | **Location search:** suggestions near campus, then drag the pin |
+
 ## Features
 
 **Students:** Discover with search and filters in the URL · event pages with a map of the venue and Google Maps directions · likes, threaded comments and reactions · a photo wall once an event starts · a wallet with top-ups, withdrawals and automatic refunds · QR tickets that also work offline · volunteer applications · an inbox for ticket, refund and moderation notices.

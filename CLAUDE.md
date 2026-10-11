@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-The app was rebuilt from an older Express/EJS version, which was removed in phase 8 (it's still in git history). `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate), 5 (social), 6 (volunteers, moderation, notifications) and 7 (admin dashboard, users, accessibility) are done. Phase 8 (ship: demo seed, Render + Neon deployment, README) is in progress; see `docs/DEPLOYMENT.md`. `main` is the deployed branch (Render auto-deploys it).
+The app was rebuilt from an older Express/EJS version, which was removed in phase 8 (it's still in git history). `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate), 5 (social), 6 (volunteers, moderation, notifications), 7 (admin dashboard, users, accessibility) and 8 (ship: demo seed, Render + Neon deployment, README) are done. The live site is https://spu-events.onrender.com; see `docs/DEPLOYMENT.md`. `main` is the deployed branch (Render auto-deploys it).
 
 ## Commands (run from repo root)
 
