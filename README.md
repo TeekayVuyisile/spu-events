@@ -2,7 +2,7 @@
 
 Campus events for Sol Plaatje University students: discover events, pay from a campus wallet, get a signed QR ticket and walk through the gate with a scan. Organisers get a live dashboard, gate tools and moderation.
 
-**Live demo:** _coming with the first deploy_ (the free tier sleeps, so the first visit can take up to a minute)
+**Live demo:** https://spu-events.onrender.com (the free tier sleeps, so the first visit can take up to a minute)
 
 | Role | Sign in with | Try |
 |---|---|---|
