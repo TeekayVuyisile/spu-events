@@ -1,4 +1,4 @@
-import { ExternalLink, LayoutDashboard, Users } from 'lucide-react';
+import { CalendarDays, ExternalLink, LayoutDashboard, Users } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
 import { SignOutButton } from '@/components/account/sign-out-button';
 import { AnimatedOutlet } from '@/components/motion/animated-outlet';
@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 
 const nav = [
   { to: '/admin', label: 'Overview', icon: LayoutDashboard },
+  { to: '/admin/events', label: 'Events', icon: CalendarDays },
   { to: '/admin/staff', label: 'Staff & invites', icon: Users },
 ] as const;
 

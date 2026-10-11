@@ -94,7 +94,7 @@ Each phase is a vertical slice: schema → API → UI → tests. Each phase gets
 
 0. ✅ **Setup (done 2026-10-10):** monorepo, tooling, CI, env config, DB + migrations, design system (ui-ux-pro-max), app shell, layout and motion primitives.
 1. ✅ **Auth and roles (done 2026-10-11):** student sign-up and login (student number or email), Postgres-backed sessions, `requireRole`, single-use hashed admin invites for staff and admins, `user:create-admin` CLI for the first admin, rate-limited auth routes. Invite links are shared by hand until email delivery lands in phase 6.
-2. **Events:** admin CRUD with draft/publish, image upload, student discover and search, event page.
+2. ✅ **Events (done 2026-10-11):** admin create/edit with draft → publish → cancel (with reason), unpublish, duplicate, delete drafts; cover uploads behind a `StorageService` with byte-level type checks; Discover with search, category, price and date filters in the URL; event page with the card → hero shared-element transition; all times entered and shown in campus time (SAST). Deferred to phase 3, marked TODO in `events.service.ts`: refunds on cancel, and blocking unpublish, capacity cuts and price changes once tickets are sold. "Trending" waits for ticket and like data (phases 3 and 5).
 3. **Wallet and tickets:** ledger, top-up and withdraw, one-step purchase with a capacity lock, signed QR, my tickets, cancel and refund.
 4. **Gate:** staff scanner, atomic check-in, scan logs, live counter.
 5. **Social:** likes, comments and reactions, photo wall.

@@ -6,6 +6,7 @@ import { createApp, type AppDeps } from '../src/app';
 import { createDb } from '../src/db/client';
 import { createLogger } from '../src/lib/logger';
 import { hashPassword } from '../src/lib/password';
+import { memoryStorage } from '../src/lib/storage';
 import { usersRepository } from '../src/modules/users/users.repository';
 import { testDatabaseUrl } from './test-db-url';
 
@@ -17,7 +18,7 @@ export const { db, pool } = createDb(testDatabaseUrl());
 /** Call at the top of a test file that touches the database. */
 export function useTestDb() {
   beforeEach(async () => {
-    await pool.query('truncate users, invites, sessions restart identity cascade');
+    await pool.query('truncate users, invites, sessions, events restart identity cascade');
   });
   afterAll(() => pool.end());
 }
@@ -29,6 +30,7 @@ export function buildApp(overrides: Partial<AppDeps> = {}) {
     db,
     pingDb: async () => true,
     sessionStore: new session.MemoryStore(),
+    storage: memoryStorage(),
     ...overrides,
   });
 }

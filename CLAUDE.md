@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations) and 1 (auth and roles) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
+A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles) and 2 (events) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
 
 ## Commands (run from repo root)
 
@@ -29,11 +29,15 @@ npm workspaces:
   - Drizzle uses `casing: 'snake_case'`: camelCase in TS, snake_case in SQL.
   - Repositories take an `Executor` (db or transaction), so services compose atomic writes with `db.transaction((tx) => repo(tx)…)`.
   - Auth: httpOnly cookie sessions (`express-session` + `connect-pg-simple`, table `sessions` owned by our migrations), argon2id passwords. `attachUser` reloads the user on each request into `res.locals.user`, so suspensions apply immediately. Guard routes with `requireAuth` / `requireRole(...)` from `middleware/auth.ts`. Call `startSession` on every login (it regenerates the session id).
+  - Uploads: files go through `StorageService` (`lib/storage.ts`; local disk in `UPLOADS_DIR`, served at `/api/uploads`, in-memory in tests). Never trust the file name or Content-Type: `detectImage` checks the bytes. The DB stores the storage key, and the API returns a URL.
+  - Status changes use conditional updates (`transition(id, from, values)` in the events repository) so concurrent clicks can't both apply.
   - CSRF: `requireSameOrigin` rejects non-GET requests whose `Origin` isn't `WEB_ORIGIN`. In tests, use the `browser()` helper in `test/helpers.ts`, which sets it.
 - `apps/web`: React 19 + Vite + Tailwind v4 + shadcn-style components (`components.json`) + Motion (`motion/react`) + TanStack Query + React Router 7 (data router in `src/router.tsx`).
   - Session state: `useSession()` in `lib/auth.ts`. Protect routes with the `requireUser(roles?)` loader, not in components. Forms use react-hook-form + the shared Zod schema; `applyServerError(form, err)` maps API field errors onto inputs.
   - Make every API call through `lib/api.ts` `api<T>()`. It sends cookies, parses JSON and throws `ApiRequestError` carrying the server's error shape.
   - `@/` is an alias for `apps/web/src`.
+  - Admin, gate and auth routes are code-split with the `page(() => import(...), 'Name')` helper in `router.tsx`; keep new admin pages lazy so students don't download them.
+  - Filters that change what a page shows (Discover, admin lists) live in the URL search params, parsed with the shared Zod query schema.
 
 ## Domain rules that span files
 

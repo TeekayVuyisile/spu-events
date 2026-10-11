@@ -1,29 +1,35 @@
+import type { ComponentType } from 'react';
 import { createBrowserRouter } from 'react-router';
-import { AdminShell } from '@/components/layout/admin-shell';
 import { AppShell } from '@/components/layout/app-shell';
 import { AuthLayout } from '@/components/layout/auth-layout';
 import { redirectIfSignedIn, requireUser } from '@/lib/auth';
-import { StaffPage } from '@/routes/admin/staff';
-import { InvitePage } from '@/routes/auth/invite';
-import { LoginPage } from '@/routes/auth/login';
-import { SignupPage } from '@/routes/auth/signup';
-import { GatePage } from '@/routes/gate';
-import { HomePage } from '@/routes/home';
+import { DiscoverPage } from '@/routes/discover';
+import { EventPage } from '@/routes/event';
 import { MePage } from '@/routes/me';
 import { NotFoundPage } from '@/routes/not-found';
 import { PlaceholderPage } from '@/routes/placeholder';
-import { BootScreen, RouteError } from '@/routes/route-states';
+import { BootScreen, RootLayout, RouteError } from '@/routes/route-states';
+
+/**
+ * Code-split routes: students never download the admin area, gate page or form
+ * libraries until they visit them. `page(() => import(...), 'Name')` adapts a named export.
+ */
+const page =
+  <M,>(load: () => Promise<M>, name: keyof M) =>
+  async () => ({ Component: (await load())[name] as ComponentType });
 
 export const router = createBrowserRouter([
   {
-    // Root: one error page and one boot screen for every route below.
+    // Root: scroll restoration, one error page and one boot screen for every route below.
+    element: <RootLayout />,
     errorElement: <RouteError />,
     HydrateFallback: BootScreen,
     children: [
       {
         element: <AppShell />,
         children: [
-          { index: true, element: <HomePage /> },
+          { index: true, element: <DiscoverPage /> },
+          { path: 'events/:slug', element: <EventPage /> },
           {
             loader: requireUser(['student']),
             children: [
@@ -44,22 +50,43 @@ export const router = createBrowserRouter([
       {
         element: <AuthLayout />,
         children: [
-          { path: 'login', loader: redirectIfSignedIn, element: <LoginPage /> },
-          { path: 'signup', loader: redirectIfSignedIn, element: <SignupPage /> },
+          {
+            path: 'login',
+            loader: redirectIfSignedIn,
+            lazy: page(() => import('@/routes/auth/login'), 'LoginPage'),
+          },
+          {
+            path: 'signup',
+            loader: redirectIfSignedIn,
+            lazy: page(() => import('@/routes/auth/signup'), 'SignupPage'),
+          },
           // Not guarded: opening an invite while signed in as someone else is allowed.
-          { path: 'invite/:token', element: <InvitePage /> },
+          { path: 'invite/:token', lazy: page(() => import('@/routes/auth/invite'), 'InvitePage') },
         ],
       },
       {
         path: 'admin',
-        element: <AdminShell />,
+        lazy: page(() => import('@/components/layout/admin-shell'), 'AdminShell'),
         loader: requireUser(['admin']),
         children: [
           { index: true, element: <PlaceholderPage title="Dashboard" phase={7} /> },
-          { path: 'staff', element: <StaffPage /> },
+          { path: 'events', lazy: page(() => import('@/routes/admin/events'), 'AdminEventsPage') },
+          {
+            path: 'events/new',
+            lazy: page(() => import('@/routes/admin/event-editor'), 'EventEditorPage'),
+          },
+          {
+            path: 'events/:id',
+            lazy: page(() => import('@/routes/admin/event-editor'), 'EventEditorPage'),
+          },
+          { path: 'staff', lazy: page(() => import('@/routes/admin/staff'), 'StaffPage') },
         ],
       },
-      { path: 'gate', loader: requireUser(['staff', 'admin']), element: <GatePage /> },
+      {
+        path: 'gate',
+        loader: requireUser(['staff', 'admin']),
+        lazy: page(() => import('@/routes/gate'), 'GatePage'),
+      },
     ],
   },
 ]);

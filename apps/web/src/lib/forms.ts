@@ -5,7 +5,10 @@ import { ApiRequestError } from '@/lib/api';
  * Puts an API error where the user will see it: field errors under their
  * inputs, anything else in the form-level alert (`errors.root.server`).
  */
-export function applyServerError<T extends FieldValues>(form: UseFormReturn<T>, err: unknown) {
+export function applyServerError<T extends FieldValues>(
+  form: Pick<UseFormReturn<T>, 'setError' | 'getValues'>,
+  err: unknown,
+) {
   if (!(err instanceof ApiRequestError)) {
     form.setError('root.server', {
       message: 'Couldn’t reach Monthati. Check your connection and try again.',

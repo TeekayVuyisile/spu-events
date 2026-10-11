@@ -1,6 +1,16 @@
 import { CircleX, Loader2 } from 'lucide-react';
-import { isRouteErrorResponse, useRouteError } from 'react-router';
+import { isRouteErrorResponse, Outlet, ScrollRestoration, useRouteError } from 'react-router';
 import { Button } from '@/components/ui/button';
+
+/** Root layout: new pages open at the top, and Back returns to where you were. */
+export function RootLayout() {
+  return (
+    <>
+      <Outlet />
+      <ScrollRestoration />
+    </>
+  );
+}
 
 /** Shown on first load while route loaders (the session check) run. */
 export function BootScreen() {
