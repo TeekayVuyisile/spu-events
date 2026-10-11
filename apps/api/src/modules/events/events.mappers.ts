@@ -3,7 +3,7 @@ import type { EventRow } from '../../db/schema';
 import type { StorageService } from '../../lib/storage';
 
 /** An event row as the repository reads it: with the live count of active tickets. */
-export type EventWithSold = EventRow & { ticketsSold: number };
+export type EventWithSold = EventRow & { ticketsSold: number; likeCount: number };
 
 /** Turns event rows into the API shapes. Shared by the events and tickets modules. */
 export function eventMappers(storage: StorageService) {
@@ -18,17 +18,24 @@ export function eventMappers(storage: StorageService) {
     priceCents: e.priceCents,
     capacity: e.capacity,
     ticketsSold: e.ticketsSold,
+    likeCount: e.likeCount,
     status: e.status,
     coverUrl: e.coverKey ? storage.url(e.coverKey) : null,
   });
 
-  const toDetail = (e: EventWithSold, myTicketId: string | null = null): EventDetail => ({
+  const toDetail = (
+    e: EventWithSold,
+    viewer: { myTicketId: string | null; likedByMe: boolean } = {
+      myTicketId: null,
+      likedByMe: false,
+    },
+  ): EventDetail => ({
     ...toSummary(e),
     description: e.description,
     volunteersWanted: e.volunteersWanted,
     cancelledAt: e.cancelledAt?.toISOString() ?? null,
     cancellationReason: e.cancellationReason,
-    myTicketId,
+    ...viewer,
   });
 
   const toAdmin = (e: EventWithSold): AdminEvent => ({

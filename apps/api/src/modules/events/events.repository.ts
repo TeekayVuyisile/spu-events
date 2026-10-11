@@ -30,7 +30,15 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * own `id` and silently count nothing. Covered by tests/tickets.test.ts.
  */
 export const ticketsSoldSql = sql<number>`(select count(*)::int from tickets t where t.event_id = "events"."id" and t.status <> 'cancelled')`;
-const withSold = { ...getTableColumns(events), ticketsSold: ticketsSoldSql };
+export const likeCountSql = sql<number>`(select count(*)::int from event_likes l where l.event_id = "events"."id")`;
+
+/** Every column of an event plus its live counters. Use this wherever events are read. */
+export const eventColumns = {
+  ...getTableColumns(events),
+  ticketsSold: ticketsSoldSql,
+  likeCount: likeCountSql,
+};
+const withSold = eventColumns;
 
 /** ILIKE pattern that treats the user's % and _ as literal characters. */
 function containsPattern(q: string) {

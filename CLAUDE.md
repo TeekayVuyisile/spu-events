@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets) and 4 (gate) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
+A full rebuild is in progress on the `redesign` branch. `docs/REDESIGN_PLAN.md` holds the product workflows, data model and delivery phases. Phases 0 (foundations), 1 (auth and roles), 2 (events), 3 (wallet and tickets), 4 (gate) and 5 (social) are done. The old Express/EJS app lives in `legacy/` as a **reference for features only**. Don't extend it. It will be deleted once the new app reaches feature parity.
 
 ## Commands (run from repo root)
 
@@ -34,6 +34,7 @@ npm workspaces:
   - In Drizzle `sql` subqueries, reference outer columns as raw qualified SQL (`"events"."id"`): interpolated columns render unqualified in single-table selects (see `ticketsSoldSql`).
   - Payments go through `PaymentProvider` (`lib/payments.ts`, simulated for now); ticket QR codes are HMAC-signed with `TICKET_SIGNING_SECRET` (`lib/ticket-signing.ts`).
   - Gate: check-in is one conditional `UPDATE … WHERE status = 'valid'` (`gateRepository.checkIn`); every scan is logged in `scan_logs` and returns `200 { result }` (invalid tickets are answers, not errors). Live counters use Server-Sent Events fed by a `LiveBus` (`lib/live-bus.ts`, in-process: one API instance only until it's swapped for Postgres LISTEN/NOTIFY or Redis).
+  - Social: public content shows authors as "First L." (`publicAuthor`), never full names or emails. Paginated feeds use keyset cursors built from Postgres's own `created_at::text` (microseconds), never a JS Date. Event reads use `eventColumns` from `events.repository.ts` so every live counter (tickets sold, likes) comes along. Posting is rate-limited per user (`userRateLimit`).
   - Status changes use conditional updates (`transition(id, from, values)` in the events repository) so concurrent clicks can't both apply.
   - CSRF: `requireSameOrigin` rejects non-GET requests whose `Origin` isn't `WEB_ORIGIN`. In tests, use the `browser()` helper in `test/helpers.ts`, which sets it.
 - `apps/web`: React 19 + Vite + Tailwind v4 + shadcn-style components (`components.json`) + Motion (`motion/react`) + TanStack Query + React Router 7 (data router in `src/router.tsx`).

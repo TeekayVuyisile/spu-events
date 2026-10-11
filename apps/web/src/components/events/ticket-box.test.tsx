@@ -32,6 +32,7 @@ const event = (overrides: Partial<EventDetail> = {}): EventDetail => ({
   priceCents: 15000,
   capacity: 100,
   ticketsSold: 40,
+  likeCount: 0,
   status: 'published',
   coverUrl: null,
   description: '',
@@ -39,6 +40,7 @@ const event = (overrides: Partial<EventDetail> = {}): EventDetail => ({
   cancelledAt: null,
   cancellationReason: null,
   myTicketId: null,
+  likedByMe: false,
   ...overrides,
 });
 

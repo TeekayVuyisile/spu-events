@@ -18,3 +18,34 @@ export function authRateLimit({ enabled }: { enabled: boolean }) {
       ),
   });
 }
+
+/**
+ * Per-user limit for posting (comments, photos), keyed by account rather than IP
+ * so a whole residence on one NAT isn't throttled together. Use after requireAuth.
+ */
+export function userRateLimit({
+  enabled,
+  windowMs,
+  limit,
+}: {
+  enabled: boolean;
+  windowMs: number;
+  limit: number;
+}) {
+  return rateLimit({
+    windowMs,
+    limit,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    skip: () => !enabled,
+    keyGenerator: (_req, res) => res.locals.user!.id,
+    handler: (_req, _res, next) =>
+      next(
+        new AppError(
+          429,
+          'RATE_LIMITED',
+          'You’re posting a lot. Take a breather and try again soon.',
+        ),
+      ),
+  });
+}

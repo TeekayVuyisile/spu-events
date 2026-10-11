@@ -7,10 +7,10 @@ import { AppError } from '../lib/errors';
  * Accepts one image file in multipart field `field`, held in memory (max 5 MB).
  * The service checks the actual bytes; this only bounds size and count.
  */
-export function singleImage(field: string): RequestHandler {
+export function singleImage(field: string, { textFields = 0 } = {}): RequestHandler {
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: COVER_MAX_BYTES, files: 1, fields: 0 },
+    limits: { fileSize: COVER_MAX_BYTES, files: 1, fields: textFields, fieldSize: 2048 },
   }).single(field);
 
   return (req, res, next) => {

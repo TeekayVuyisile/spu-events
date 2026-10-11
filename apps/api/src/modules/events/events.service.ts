@@ -6,6 +6,7 @@ import { AppError } from '../../lib/errors';
 import { detectImage } from '../../lib/image';
 import type { StorageService } from '../../lib/storage';
 import { refundTickets } from '../tickets/tickets.service';
+import { socialRepository } from '../social/social.repository';
 import { ticketsRepository } from '../tickets/tickets.repository';
 import { eventMappers } from './events.mappers';
 import { eventsRepository } from './events.repository';
@@ -77,10 +78,12 @@ export function eventsService({ db, storage }: { db: Db; storage: StorageService
     async getPublished(slug: string, viewerId?: string) {
       const event = await repo.findBySlug(slug);
       if (!event || event.status === 'draft') throw notFound();
-      const mine = viewerId
-        ? await ticketsRepository(db).findActive(event.id, viewerId)
-        : undefined;
-      return toDetail(event, mine?.id ?? null);
+      if (!viewerId) return toDetail(event);
+      const [mine, likes] = await Promise.all([
+        ticketsRepository(db).findActive(event.id, viewerId),
+        socialRepository(db).eventLikeState(event.id, viewerId),
+      ]);
+      return toDetail(event, { myTicketId: mine?.id ?? null, likedByMe: likes.liked });
     },
 
     // ── Admin ───────────────────────────────────────────────

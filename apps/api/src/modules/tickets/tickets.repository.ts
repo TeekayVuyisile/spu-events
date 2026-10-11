@@ -2,12 +2,12 @@ import type { TicketCancelReason, TicketScope } from '@monthati/shared';
 import { and, asc, desc, eq, getTableColumns, gte, lt, ne, or, sql } from 'drizzle-orm';
 import type { Executor } from '../../db/client';
 import { events, tickets } from '../../db/schema';
-import { ticketsSoldSql } from '../events/events.repository';
+import { eventColumns } from '../events/events.repository';
 
 /** A ticket together with its event (including the event's live sales count). */
 const ticketWithEvent = {
   ticket: getTableColumns(tickets),
-  event: { ...getTableColumns(events), ticketsSold: ticketsSoldSql },
+  event: eventColumns,
 };
 
 export function ticketsRepository(db: Executor) {

@@ -5,6 +5,9 @@ import { Link, useParams } from 'react-router';
 import { categoryIcons } from '@/components/events/category-icons';
 import { EventCover } from '@/components/events/event-cover';
 import { TicketBox } from '@/components/events/ticket-box';
+import { CommentsSection } from '@/components/social/comments';
+import { EventLikeButton } from '@/components/social/like-button';
+import { PhotoWall } from '@/components/social/photo-wall';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -85,6 +88,7 @@ export function EventPage() {
             <h1 className="text-4xl leading-tight font-extrabold text-balance md:text-5xl">
               {event.title}
             </h1>
+            <EventLikeButton event={event} />
           </div>
 
           <dl className="grid gap-4 sm:grid-cols-2">
@@ -116,6 +120,9 @@ export function EventPage() {
               </p>
             </section>
           )}
+
+          <PhotoWall event={event} />
+          <CommentsSection event={event} />
         </div>
 
         <TicketBox event={event} />

@@ -1,5 +1,5 @@
 import { dateBlock, formatTime, type EventSummary } from '@monthati/shared';
-import { MapPin } from 'lucide-react';
+import { Heart, MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +44,14 @@ export function EventCard({ event }: { event: EventSummary }) {
               <span className="tabular text-sm text-muted-foreground">
                 · {formatTime(event.startsAt)}
               </span>
+              {event.likeCount > 0 && (
+                <span
+                  className="tabular inline-flex items-center gap-1 text-sm text-muted-foreground"
+                  aria-label={`${event.likeCount} likes`}
+                >
+                  · <Heart className="size-3.5" aria-hidden /> {event.likeCount}
+                </span>
+              )}
               {live && (
                 <Badge tone="destructive">
                   <span

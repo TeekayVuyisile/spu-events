@@ -1,9 +1,9 @@
 import type { ScanResultKind } from '@monthati/shared';
-import { and, asc, desc, eq, getTableColumns, gte, inArray, lte, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { Executor } from '../../db/client';
 import { events, eventStaff, scanLogs, tickets, users } from '../../db/schema';
-import { ticketsSoldSql } from '../events/events.repository';
+import { eventColumns, ticketsSoldSql } from '../events/events.repository';
 
 // Raw, fully qualified SQL for the same reason as ticketsSoldSql (see events.repository.ts).
 const checkedInSql = sql<number>`(select count(*)::int from tickets t where t.event_id = "events"."id" and t.status = 'used')`;
@@ -54,8 +54,7 @@ export function gateRepository(db: Executor) {
       const weekAhead = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
       const base = db
         .select({
-          ...getTableColumns(events),
-          ticketsSold: ticketsSoldSql,
+          ...eventColumns,
           checkedIn: checkedInSql,
         })
         .from(events);
@@ -80,8 +79,7 @@ export function gateRepository(db: Executor) {
     async findGateEvent(eventId: string) {
       const [row] = await db
         .select({
-          ...getTableColumns(events),
-          ticketsSold: ticketsSoldSql,
+          ...eventColumns,
           checkedIn: checkedInSql,
         })
         .from(events)

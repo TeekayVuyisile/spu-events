@@ -22,6 +22,7 @@ const event = (title: string, priceCents: number): EventSummary => ({
   priceCents,
   capacity: 100,
   ticketsSold: 0,
+  likeCount: 0,
   status: 'published',
   coverUrl: null,
 });

@@ -24,6 +24,8 @@ import { gateService } from './modules/gate/gate.service';
 import { healthRoutes } from './modules/health/health.routes';
 import { adminInvitesRoutes, publicInvitesRoutes } from './modules/invites/invites.routes';
 import { invitesService } from './modules/invites/invites.service';
+import { socialRoutes } from './modules/social/social.routes';
+import { socialService } from './modules/social/social.service';
 import { purchaseRoute, ticketsRoutes } from './modules/tickets/tickets.routes';
 import { ticketsService } from './modules/tickets/tickets.service';
 import { usersRepository } from './modules/users/users.repository';
@@ -101,6 +103,10 @@ export function createApp({
   app.use('/api/wallet', walletRoutes(walletService({ db, payments })));
   app.use('/api/admin/events', adminEventsRoutes(events));
   app.use('/api/gate', gateRoutes(gate, bus));
+  app.use(
+    '/api',
+    socialRoutes(socialService({ db, storage }), { limitsEnabled: env.NODE_ENV !== 'test' }),
+  );
   // Last among /api/admin routers: it guards everything under /api/admin it sees.
   app.use('/api/admin', adminGateRoutes(gate, bus));
 

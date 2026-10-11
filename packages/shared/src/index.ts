@@ -7,3 +7,4 @@ export * from './time';
 export * from './wallet';
 export * from './tickets';
 export * from './gate';
+export * from './social';
