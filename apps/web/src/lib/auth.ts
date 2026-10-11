@@ -1,5 +1,7 @@
 import type {
   AcceptInviteInput,
+  DemoInfo,
+  DemoLoginInput,
   LoginInput,
   MeResponse,
   Role,
@@ -58,6 +60,20 @@ const post = <T>(path: string, body?: unknown) =>
 export function useLogin() {
   return useMutation({
     mutationFn: (input: LoginInput) => post<MeResponse>('/auth/login', input),
+    onSuccess: setSessionUser,
+  });
+}
+
+/** Whether this deployment is a public demo with one-click sign-in. */
+export const demoQuery = queryOptions({
+  queryKey: ['demo'],
+  queryFn: () => api<DemoInfo>('/demo'),
+  staleTime: Infinity,
+});
+
+export function useDemoLogin() {
+  return useMutation({
+    mutationFn: (role: Role) => post<MeResponse>('/demo/login', { role } satisfies DemoLoginInput),
     onSuccess: setSessionUser,
   });
 }

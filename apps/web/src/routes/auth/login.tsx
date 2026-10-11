@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginInput } from '@spu-events/shared';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router';
+import { DemoSignIn } from '@/components/auth/demo-sign-in';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { FormAlert } from '@/components/ui/form-alert';
@@ -37,6 +38,8 @@ export function LoginPage() {
         <h1 className="text-3xl font-extrabold md:text-4xl">Welcome back</h1>
         <p className="text-muted-foreground">Log in to get tickets and manage your wallet.</p>
       </div>
+
+      <DemoSignIn next={next} />
 
       <form onSubmit={onSubmit} noValidate className="space-y-5">
         <FormAlert message={errors.root?.server?.message} />

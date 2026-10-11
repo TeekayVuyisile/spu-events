@@ -13,6 +13,7 @@ import type { Db } from '../../db/client';
 import type { User } from '../../db/schema';
 import { uniqueViolation } from '../../lib/db-errors';
 import { AppError } from '../../lib/errors';
+import { isDemoAccount } from '../../seed/accounts';
 import { audit, auditRepository } from '../audit/audit.repository';
 import { notify } from '../notifications/notifications.repository';
 import { usersRepository } from '../users/users.repository';
@@ -75,6 +76,11 @@ export function adminUsersService({ db }: { db: Db }) {
   function assertSuspendable(adminId: string, user: User) {
     if (user.id === adminId) throw AppError.forbidden('You can’t suspend your own account');
     if (user.role === 'admin') throw AppError.forbidden('Admin accounts can’t be suspended');
+    if (isDemoAccount(user.email)) {
+      throw AppError.forbidden(
+        'Every visitor signs in with this demo account, so it stays active. Try another student.',
+      );
+    }
   }
 
   return {

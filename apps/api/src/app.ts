@@ -26,6 +26,7 @@ import { authService } from './modules/auth/auth.service';
 import { adminEventsRoutes, publicEventsRoutes } from './modules/events/events.routes';
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes';
 import { dashboardService } from './modules/dashboard/dashboard.service';
+import { demoRoutes, type DemoConfig } from './modules/demo/demo.routes';
 import { eventsService } from './modules/events/events.service';
 import { adminGateRoutes, gateRoutes } from './modules/gate/gate.routes';
 import { gateService } from './modules/gate/gate.service';
@@ -57,6 +58,8 @@ export interface AppDeps {
   geocoder: Geocoder;
   /** Built web app to serve on the same origin (production). */
   webDist?: string;
+  /** Set on public demos: enables one-click sign-in to the demo accounts. */
+  demo?: DemoConfig;
 }
 
 /** Builds the Express app without listening, so tests can drive it with supertest. */
@@ -71,6 +74,7 @@ export function createApp({
   bus,
   geocoder,
   webDist,
+  demo,
 }: AppDeps) {
   const app = express();
   const users = usersRepository(db);
@@ -115,6 +119,7 @@ export function createApp({
 
   app.use('/api/health', healthRoutes(pingDb));
   app.use('/api/auth', authRoutes(authService({ users }), limiter));
+  app.use('/api/demo', demoRoutes(users, demo, limiter));
 
   const invites = invitesService({ db, webOrigin: env.WEB_ORIGIN });
   app.use('/api/admin/invites', adminInvitesRoutes(invites));

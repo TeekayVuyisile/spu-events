@@ -38,6 +38,19 @@ export const loginSchema = z.object({
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
+/**
+ * Public demos sign visitors in to a ready-made account for the chosen role with one
+ * click. The server signs them in, so the demo password never reaches the browser.
+ */
+export const demoLoginSchema = z.object({ role: roleSchema });
+export type DemoLoginInput = z.infer<typeof demoLoginSchema>;
+
+export interface DemoInfo {
+  enabled: boolean;
+  /** How often the demo data is wiped and re-seeded, or null if it isn't. */
+  resetHours: number | null;
+}
+
 /** The signed-in user as the web app sees it. Never includes the password hash. */
 export const sessionUserSchema = z.object({
   id: z.uuid(),

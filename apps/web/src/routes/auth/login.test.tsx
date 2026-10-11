@@ -54,7 +54,7 @@ describe('LoginPage', () => {
       'aria-invalid',
       'true',
     );
-    expect(fetch).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalledWith('/api/auth/login', expect.anything());
   });
 
   it('shows the server’s message when the login is wrong', async () => {
@@ -101,5 +101,45 @@ describe('LoginPage', () => {
       '/api/auth/login',
       expect.objectContaining({ method: 'POST' }),
     );
+  });
+
+  it('offers one-click demo accounts on a demo deployment', async () => {
+    const fetch = vi.fn(async (url: string) =>
+      url === '/api/demo'
+        ? json(200, { enabled: true, resetHours: 6 })
+        : json(200, {
+            user: {
+              id: '00000000-0000-4000-8000-000000000001',
+              role: 'admin',
+              firstName: 'Thandi',
+              lastName: 'Nkosi',
+              email: 'admin@spuevents.demo',
+              studentNumber: null,
+              avatarUrl: null,
+            },
+          }),
+    );
+    vi.stubGlobal('fetch', fetch);
+    const router = renderLogin();
+
+    expect(await screen.findByText(/resets every 6 hours/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Try as Admin' }));
+
+    expect(await screen.findByText('Landed on page')).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/admin');
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/demo/login',
+      expect.objectContaining({ method: 'POST', body: JSON.stringify({ role: 'admin' }) }),
+    );
+  });
+
+  it('shows no demo panel on a normal deployment', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => json(200, { enabled: false, resetHours: null })),
+    );
+    renderLogin();
+    await screen.findByRole('button', { name: 'Log in' });
+    expect(screen.queryByRole('heading', { name: 'Exploring the demo?' })).not.toBeInTheDocument();
   });
 });

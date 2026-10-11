@@ -23,7 +23,7 @@ Why this shape:
 `render.yaml` is a Render Blueprint, so the whole service is defined in the repo.
 
 1. **Build:** `npm ci --include=dev && npm run build` builds the shared package, the API (tsup → `apps/api/dist`) and the web app (Vite → `apps/web/dist`).
-2. **Release:** `npm run release -w @spu-events/api` (`src/release.ts`) applies pending migrations. If `DEMO_PASSWORD` is set and the database has no accounts yet, it also seeds demo data (`src/seed/demo.ts`). It is safe to run on every start.
+2. **Release:** `npm run release -w @spu-events/api` (`src/release.ts`) applies pending migrations. If `DEMO_PASSWORD` is set and the database has no accounts yet, it also seeds demo data (`src/seed/demo.ts`). With `DEMO_RESET_HOURS`, it also wipes and re-seeds demo data older than that (`src/seed/refresh.ts`). It is safe to run on every start.
 3. **Start:** `node dist/server.js`. Render's health check calls `/api/health`, which also pings the database.
 
 ## Environment
@@ -31,7 +31,8 @@ Why this shape:
 | Variable | Set by | Notes |
 |---|---|---|
 | `DATABASE_URL` | you, in Render | Neon **direct** connection string (`…neon.tech/neondb?sslmode=require`). |
-| `DEMO_PASSWORD` | you, in Render | Password for the demo accounts, at least 10 characters (the same rule as sign-up; the service won't start otherwise). Remove it to stop seeding (seeding only ever runs on an empty database). |
+| `DEMO_PASSWORD` | you, in Render | Password for the demo accounts, at least 10 characters (the same rule as sign-up; the service won't start otherwise). It also turns on one-click demo sign-in (`/api/demo`). Remove it to stop seeding and hide the demo buttons. |
+| `DEMO_RESET_HOURS=6` | `render.yaml` | **Wipes the whole database** and re-seeds once the demo data is this old, checked on every start and every 10 minutes while running. For the public demo only. |
 | `SESSION_SECRET`, `TICKET_SIGNING_SECRET` | Render (`generateValue`) | Random 256-bit values. Changing the ticket secret invalidates every issued QR code. |
 | `NODE_ENV=production`, `STORAGE=database`, `WEB_DIST_DIR` | `render.yaml` | `production` turns on `Secure` cookies (Render terminates HTTPS and sets `X-Forwarded-Proto`; the app trusts one proxy hop). |
 | `WEB_ORIGIN` | automatic | Defaults to Render's `RENDER_EXTERNAL_URL`. Set it only when using a custom domain. |
@@ -44,7 +45,9 @@ Why this shape:
 | Gate staff | `gate@spuevents.demo` |
 | Student | `202312345` or `student@spuevents.demo` |
 
-All three use `DEMO_PASSWORD`. The seed also creates 15 more students (each with an unguessable password), 10 events with generated cover art (two past, one draft), a month of backdated sales and check-ins, comments, two volunteer applications and one reported comment. That gives every admin screen something to show.
+Visitors don't need the password: the login page shows **Try as student / gate staff / admin** buttons, and a banner on the student site points signed-out visitors there. The server signs them in to these accounts (`modules/demo/demo.routes.ts`), so `DEMO_PASSWORD` never reaches the browser. Admins can't suspend these three accounts, so one visitor can't lock out the next. Anything else a visitor changes (cancelled events, comments, sign-ups) disappears at the next reset.
+
+All three also accept `DEMO_PASSWORD` on the normal form. The seed also creates 15 more students (each with an unguessable password), 10 events with generated cover art (two past, one draft), a month of backdated sales and check-ins, comments, two volunteer applications and one reported comment. That gives every admin screen something to show.
 
 To try the same data locally, run `DEMO_PASSWORD=… npm run db:setup -w @spu-events/api` against an empty database.
 
@@ -63,7 +66,7 @@ Both are free, community-run services with fair-use policies. That's fine for a 
 
 ## Starting over
 
-To reset the demo, open the Neon SQL editor and run:
+With `DEMO_RESET_HOURS` set, the demo resets itself. To start completely fresh (for example after changing the schema by hand), open the Neon SQL editor and run:
 
 ```sql
 drop schema public cascade;

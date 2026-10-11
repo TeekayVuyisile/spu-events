@@ -18,6 +18,11 @@ const envSchema = z.object({
   WEB_DIST_DIR: z.string().optional(),
   /** When set, `release` fills an empty database with demo data; the demo accounts use this password. */
   DEMO_PASSWORD: passwordSchema.optional(),
+  /**
+   * Public demos only: wipe and re-seed the demo data once it's this many hours old.
+   * Never set it where the data matters: it empties the whole database.
+   */
+  DEMO_RESET_HOURS: z.coerce.number().positive().optional(),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 

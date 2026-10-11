@@ -1,5 +1,6 @@
 import { CalendarDays, Inbox, Ticket, UserRound, Wallet } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
+import { DemoBanner } from '@/components/auth/demo-sign-in';
 import { AnimatedOutlet } from '@/components/motion/animated-outlet';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { Avatar } from '@/components/ui/avatar';
@@ -68,6 +69,8 @@ export function AppShell() {
       >
         Skip to content
       </a>
+
+      <DemoBanner />
 
       <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">

@@ -4,13 +4,15 @@ Campus events for Sol Plaatje University students: discover events, pay from a c
 
 **Live demo:** https://spu-events.onrender.com (the free tier sleeps, so the first visit can take up to a minute)
 
-| Role | Sign in with | Try |
-|---|---|---|
-| Student | `202312345` | Buy a ticket with the wallet, open the QR, comment, apply to volunteer |
-| Gate staff | `gate@spuevents.demo` | Scan tickets with a phone camera (HTTPS), or type a ticket code |
-| Admin | `admin@spuevents.demo` | Dashboard, create and publish events, moderation, users and wallet adjustments |
+No sign-up or password needed: on the login page, pick **Try as student**, **Try as gate staff** or **Try as admin**. The demo data resets every 6 hours, so feel free to break things.
 
-Demo passwords are shared on request.
+| Role | Things to try |
+|---|---|
+| Student | Buy a ticket with the wallet, open the QR, comment, apply to volunteer |
+| Gate staff | Scan a student's QR with a phone camera, or type a ticket code |
+| Admin | Dashboard, create and publish an event with a map pin, moderation, users and wallet adjustments |
+
+To see the whole flow, open the student's ticket on one device and scan it as gate staff on another.
 
 ![Admin dashboard: revenue, tickets sold, check-in rate and daily sales](docs/screenshots/admin-dashboard.jpg)
 

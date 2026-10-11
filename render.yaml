@@ -20,6 +20,10 @@ services:
         sync: false
       - key: DEMO_PASSWORD
         sync: false
+      # Public demo: visitors sign in with one click, and the data is wiped and
+      # re-seeded every 6 hours. Remove this before the data ever matters.
+      - key: DEMO_RESET_HOURS
+        value: '6'
       - key: SESSION_SECRET
         generateValue: true
       - key: TICKET_SIGNING_SECRET

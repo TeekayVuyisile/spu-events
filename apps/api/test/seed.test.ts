@@ -31,12 +31,24 @@ describe('demo seed', () => {
       .post('/api/auth/login')
       .send({ identifier: DEMO_ACCOUNTS.studentNumber, password })
       .expect(200);
-    expect((await student.get('/api/tickets?scope=upcoming')).body.tickets).toHaveLength(2);
+    const upcoming = (await student.get('/api/tickets?scope=upcoming')).body.tickets;
+    expect(upcoming).toHaveLength(3);
     expect((await student.get('/api/tickets?scope=past')).body.tickets).toHaveLength(1);
 
     const events = (await request(app).get('/api/events')).body.events;
     expect(events.every((e: { coverUrl: string | null }) => e.coverUrl)).toBe(true);
-    expect(storage.files.size).toBe(10);
+    expect(storage.files.size).toBe(11);
+
+    // The gate demo always has a running event, with the demo student's ticket still unscanned.
+    const gate = browser(app);
+    await gate
+      .post('/api/auth/login')
+      .send({ identifier: DEMO_ACCOUNTS.staff, password })
+      .expect(200);
+    const live = events.find((e: { title: string }) => e.title === '24-Hour Study Jam');
+    const ticket = upcoming.find((t: { event: { id: string } }) => t.event.id === live.id);
+    const scan = await gate.post(`/api/gate/events/${live.id}/scan`).send({ code: ticket.code });
+    expect(scan.body.result).toBe('admitted');
 
     const { rows } = await pool.query('select count(*)::int as n from scan_logs');
     expect(rows[0].n).toBeGreaterThan(10);

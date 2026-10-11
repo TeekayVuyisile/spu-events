@@ -14,15 +14,10 @@ import { socialService } from '../modules/social/social.service';
 import { ticketsService } from '../modules/tickets/tickets.service';
 import { usersRepository } from '../modules/users/users.repository';
 import { walletService } from '../modules/wallet/wallet.service';
+import { DEMO_ACCOUNTS } from './accounts';
 import { coverPng, mulberry32 } from './covers';
 
-/** The accounts people sign in with. Everyone else gets an unguessable password. */
-export const DEMO_ACCOUNTS = {
-  admin: 'admin@spuevents.demo',
-  staff: 'gate@spuevents.demo',
-  student: 'student@spuevents.demo',
-  studentNumber: '202312345',
-} as const;
+export { DEMO_ACCOUNTS };
 
 const COVER_COLOURS: Record<EventCategory, [string, string]> = {
   party: ['#7c3aed', '#f97316'],
@@ -66,12 +61,31 @@ interface DemoEvent extends Omit<EventInput, 'startsAt' | 'endsAt'> {
   hour: number;
   hours: number;
   draft?: boolean;
+  /** Already running (started two hours before seeding), so the gate always has something to scan. */
+  live?: boolean;
   /** Share of students who buy a ticket, and of those who were scanned in (past events). */
   demand: number;
   attended?: number;
 }
 
 const EVENTS: DemoEvent[] = [
+  {
+    title: '24-Hour Study Jam',
+    category: 'academic',
+    venue: 'Library',
+    location: SITES.north,
+    description:
+      'Quiet rooms, group tables and free coffee, all day and all night. Come and go as you like.\nScan in at the library entrance.',
+    day: 0,
+    hour: 0,
+    hours: 24,
+    capacity: 150,
+    priceCents: 0,
+    volunteersWanted: false,
+    demand: 0.5,
+    attended: 0.4,
+    live: true,
+  },
   {
     title: 'Welcome Week Braai',
     category: 'party',
@@ -333,8 +347,8 @@ export async function seedDemo({
   // ── Events, sales, social ──
   const created: { id: string; spec: DemoEvent }[] = [];
   for (const [i, spec] of EVENTS.entries()) {
-    // Past events are created in the future, sold, then moved back in time below.
-    const day = spec.day < 0 ? 2 : spec.day;
+    // Past and live events are created in the future, sold, then moved back in time below.
+    const day = spec.day < 0 || spec.live ? 2 : spec.day;
     const startsAt = at(day, spec.hour, now);
     const { title, category, venue, location, description, capacity, priceCents } = spec;
     const event = await events.create(
@@ -359,10 +373,13 @@ export async function seedDemo({
 
     await events.publish(event.id);
     await gate.assignStaff(event.id, [staff.id]);
-    // The demo student holds tickets to a past and two upcoming events.
-    const leratoGoes = ['Welcome Week Braai', 'Spring Formal', 'Jazz on the Lawn'].includes(
-      spec.title,
-    );
+    // The demo student holds tickets to a past, a live and two upcoming events.
+    const leratoGoes = [
+      'Welcome Week Braai',
+      '24-Hour Study Jam',
+      'Spring Formal',
+      'Jazz on the Lawn',
+    ].includes(spec.title);
     for (const s of students) {
       const buys = s === lerato ? leratoGoes : rand() < spec.demand;
       if (buys) {
@@ -406,9 +423,12 @@ export async function seedDemo({
     details: 'Reselling tickets outside the app',
   });
 
-  // ── History: move past events back in time and spread sales over the month ──
-  for (const { id, spec } of created.filter((e) => e.spec.day < 0)) {
-    const startsAt = at(spec.day, spec.hour, now);
+  // ── History: move past and live events back in time and spread sales over the month ──
+  const liveStart = new Date(now);
+  liveStart.setUTCMinutes(0, 0, 0);
+  liveStart.setTime(liveStart.getTime() - 2 * 3_600_000);
+  for (const { id, spec } of created.filter((e) => e.spec.day < 0 || e.spec.live)) {
+    const startsAt = spec.live ? liveStart : at(spec.day, spec.hour, now);
     const endsAt = new Date(startsAt.getTime() + spec.hours * 3_600_000);
     await db.execute(
       sql`update events set starts_at = ${startsAt.toISOString()}, ends_at = ${endsAt.toISOString()} where id = ${id}`,
@@ -422,6 +442,8 @@ export async function seedDemo({
             checked_in_by_id = ${staff.id},
             checked_in_gate = 'Main gate'
         where event_id = ${id} and status = 'valid' and random() < ${spec.attended ?? 0}
+          -- Leave the demo student's live ticket unscanned, for visitors to scan themselves.
+          and (${!spec.live} or user_id <> ${lerato.id})
         returning id, checked_in_at
       )
       insert into scan_logs (event_id, ticket_id, staff_id, result, gate, created_at)
