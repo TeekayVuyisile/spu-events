@@ -23,11 +23,38 @@ To see the whole flow, open the student's ticket on one device and scan it as ga
 | ![Admin events list with drafts and sales](docs/screenshots/admin-events.jpg) | ![Event editor suggesting campus places as you type](docs/screenshots/location-picker.jpg) |
 | **Events:** drafts, sales and status at a glance | **Location search:** suggestions near campus, then drag the pin |
 
+## Tickets and gate check-in
+
+Getting students through the gate is the core of the app: a student shows a QR ticket on their screen, and gate staff scan it with a phone camera.
+
+[![Gate staff scanning a ticket: Admit, then Already used on the second scan](docs/media/ticket-scanning-preview.gif)](docs/media/ticket-scanning-demo.mp4)
+
+**[Watch the full demo (1:29)](docs/media/ticket-scanning-demo.mp4):** a student on a laptop and gate staff on a phone, from buying the ticket to the wrong-ticket cases.
+
+<img src="docs/screenshots/ticket.jpg" alt="A student's ticket for the 24-Hour Study Jam with a QR code, ticket code and a Show at the gate button" width="300" align="right">
+
+**How it works**
+
+1. **The ticket.** Every ticket gets a QR code with an HMAC-signed payload, so it can't be forged or edited, plus a short code (like `SPU-44WM-64S3`) for typing in by hand. A ticket the student has opened is kept on their device, so it still shows without signal.
+2. **Show at the gate.** One tap shows the QR full screen on a white background, so it scans easily even on a dim phone.
+3. **Scan.** Gate staff pick the event they're working, then point the camera at the code. The verdict fills the screen in a colour you can read at a glance, and the phone vibrates differently for a pass and a problem:
+   - **Admit** (green): the ticket is valid and is now checked in.
+   - **Already used** (amber): shows when it was scanned and by which gate or staff member.
+   - **Gates closed** (amber): too early, with the time the gates open, or the event is over.
+   - **Wrong event** (red): names the event the ticket is actually for.
+   - **Cancelled ticket** (red): the student cancelled it for a refund.
+   - **Invalid ticket** (red): a forged or unknown code.
+4. **Live everywhere.** Every scan is logged and streamed to the other gates and the admin live check-in page as it happens, and the student's ticket changes to **Checked in**.
+
+Two gates scanning the same ticket at the same moment can't both admit it: check-in is one conditional database update, and a test races two scans to prove it (see [Engineering highlights](#engineering-highlights)).
+
+<br clear="right">
+
 ## Features
 
 **Students:** Discover with search and filters in the URL · event pages with a map of the venue and Google Maps directions · likes, threaded comments and reactions · a photo wall once an event starts · a wallet with top-ups, withdrawals and automatic refunds · QR tickets that also work offline · volunteer applications · an inbox for ticket, refund and moderation notices.
 
-**Gate staff:** a phone-camera scanner with clear admit, already used, wrong event and cancelled results, plus a live check-in counter shared by every gate.
+**Gate staff:** a phone-camera scanner with clear admit, already used, gates closed, wrong event and cancelled results, plus a live check-in counter shared by every gate.
 
 **Admins:** a dashboard (revenue net of refunds, tickets sold, check-in rate, active students, daily sales) · the event lifecycle (draft → published → cancelled, with refunds) · capacity limits that can't oversell · location search with suggestions and a draggable map pin · staff invites and gate assignments · a moderation queue · user management with an audit log · attendee CSV export.
 
@@ -76,7 +103,7 @@ flowchart LR
 apps/api        Express API (src/modules/<feature>/…), migrations in drizzle/
 apps/web        React app (src/routes, src/components, src/lib)
 packages/shared Zod schemas, types and money helpers used by both
-docs/           redesign plan and deployment notes
+docs/           redesign plan, deployment notes, screenshots and the demo video
 ```
 
 ## Run it locally
