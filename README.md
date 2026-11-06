@@ -25,13 +25,14 @@ To see the whole flow, open the student's ticket on one device and scan it as ga
 | ![Admin events list with drafts and sales](docs/screenshots/admin-events.jpg) | ![Event editor suggesting campus places as you type](docs/screenshots/location-picker.jpg) |
 | **Events:** drafts, sales and status at a glance | **Location search:** suggestions near campus, then drag the pin |
 
-## Tickets and gate check-in
+## Watch Demo Video
 
-Getting students through the gate is the core of the app: a student shows a QR ticket on their screen, and gate staff scan it with a phone camera.
+A 3-minute captioned tour, recorded on the live demo: students finding events and buying tickets, gate staff scanning tickets on a phone, and the admin dashboard.
 
-[![Gate staff scanning a ticket: Admit, then Already used on the second scan](docs/media/ticket-scanning-preview.gif)](docs/media/full-demo.mp4)
 
-**[Watch the full demo (3:07)](docs/media/full-demo.mp4):** the ticket and gate part starts about 1:10 in, with a student on a laptop and gate staff on a phone, through to the wrong-ticket cases.
+https://github.com/user-attachments/assets/6e7d3165-f58d-4ddf-af72-23bf75c001f6
+
+
 
 <img src="docs/screenshots/ticket.jpg" alt="A student's ticket for the 24-Hour Study Jam with a QR code, ticket code and a Show at the gate button" width="300" align="right">
 
