@@ -4,6 +4,8 @@ Campus events for Sol Plaatje University students: discover events, pay from a c
 
 **Live demo:** https://spu-events.onrender.com (the free tier sleeps, so the first visit can take up to a minute)
 
+**[Watch the 3-minute demo video](docs/media/full-demo.mp4):** the student, gate staff and admin sides of the app, with captions.
+
 No sign-up or password needed: on the login page, pick **Try as student**, **Try as gate staff** or **Try as admin**. The demo data resets every 6 hours, so feel free to break things.
 
 | Role | Things to try |
@@ -27,9 +29,9 @@ To see the whole flow, open the student's ticket on one device and scan it as ga
 
 Getting students through the gate is the core of the app: a student shows a QR ticket on their screen, and gate staff scan it with a phone camera.
 
-[![Gate staff scanning a ticket: Admit, then Already used on the second scan](docs/media/ticket-scanning-preview.gif)](docs/media/ticket-scanning-demo.mp4)
+[![Gate staff scanning a ticket: Admit, then Already used on the second scan](docs/media/ticket-scanning-preview.gif)](docs/media/full-demo.mp4)
 
-**[Watch the full demo (1:29)](docs/media/ticket-scanning-demo.mp4):** a student on a laptop and gate staff on a phone, from buying the ticket to the wrong-ticket cases.
+**[Watch the full demo (3:07)](docs/media/full-demo.mp4):** the ticket and gate part starts about 1:10 in, with a student on a laptop and gate staff on a phone, through to the wrong-ticket cases.
 
 <img src="docs/screenshots/ticket.jpg" alt="A student's ticket for the 24-Hour Study Jam with a QR code, ticket code and a Show at the gate button" width="300" align="right">
 
